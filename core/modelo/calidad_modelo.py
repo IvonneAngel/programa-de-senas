@@ -41,6 +41,7 @@ class ModelQualityProfile:
 
 
 def quality_status(f1_score: float | None, *, minimum_f1: float = DEFAULT_MIN_F1_FOR_TRANSLATION) -> str:
+    """quality status."""
     if f1_score is None:
         return "missing"
     if f1_score >= STRONG_F1:
@@ -51,6 +52,7 @@ def quality_status(f1_score: float | None, *, minimum_f1: float = DEFAULT_MIN_F1
 
 
 def load_model_quality_profile(path: str | Path | None) -> ModelQualityProfile:
+    """load model quality profile."""
     if path is None:
         return ModelQualityProfile(None, DEFAULT_MIN_F1_FOR_TRANSLATION, {})
 
@@ -80,6 +82,7 @@ def load_model_quality_profile(path: str | Path | None) -> ModelQualityProfile:
     return ModelQualityProfile(profile_path, minimum_f1, labels)
 
 
+    """build quality profile from metrics."""
 def build_quality_profile_from_metrics(
     metrics: dict[str, Any],
     *,

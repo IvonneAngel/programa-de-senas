@@ -17,6 +17,7 @@ from core.vision.recursos_mediapipe import configure_mediapipe_resources, prepar
 
 
 def run_camera_loop(args: argparse.Namespace, cap, runtime_model: RuntimeModel, event_logger: RuntimeEventLogger) -> None:
+    """run camera loop."""
     prepare_mediapipe_import_path()
     import mediapipe as mp
 
@@ -102,6 +103,7 @@ def run_camera_loop(args: argparse.Namespace, cap, runtime_model: RuntimeModel, 
 
 
 def _practice_frame(args: argparse.Namespace, frame, practice_cards: list, started_at: float):
+    """ practice frame."""
     if not args.practice_guide:
         return frame
     return compose_practice_view(
@@ -112,6 +114,8 @@ def _practice_frame(args: argparse.Namespace, frame, practice_cards: list, start
     )
 
 
+    """ event payload."""
+    """ event payload."""
 def _event_payload(args: argparse.Namespace, runtime_model: RuntimeModel) -> dict:
     return {
         "camera": args.camera,

@@ -17,6 +17,7 @@ def demo_gestures() -> list[dict]:
     return [gesture for gesture in PRACTICE_GESTURES if gesture["word"] in wanted]
 
 def run_demo_loop(args: argparse.Namespace, model_ready: bool, labels: list[str], event_logger: RuntimeEventLogger) -> None:
+    """run demo loop."""
     gestures = demo_gestures()
     if not gestures:
         raise RuntimeError("No hay gestos demo configurados.")

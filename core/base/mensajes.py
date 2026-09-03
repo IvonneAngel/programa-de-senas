@@ -10,6 +10,7 @@ SHOW_HAND_TEXT = "Muestra tu mano"
 
 
 def display_phrase(text: str) -> str:
+    """display phrase."""
     clean = str(text).replace("_", " ").strip()
     if not clean:
         return ""

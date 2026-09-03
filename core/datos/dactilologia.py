@@ -79,6 +79,7 @@ class DactylologyError(ValueError):
 
 
 def normalize_character(character: str) -> str:
+    """normalize character."""
     if len(character) != 1:
         raise DactylologyError("Expected exactly one character.")
 
@@ -98,6 +99,7 @@ def is_valid_character(character: str) -> bool:
 
 
 def validate_word(word: str) -> tuple[str, ...]:
+    """validate word."""
     stripped = word.strip()
     if not stripped:
         raise DactylologyError("Expected a non-empty word.")

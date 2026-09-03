@@ -20,6 +20,7 @@ FACE_OFFSET = TWO_HAND_KEYPOINTS + POSE_VALUES
 
 
 def _flatten_hand(hand_landmarks: Any | None) -> np.ndarray:
+    """ flatten hand."""
     if hand_landmarks is None:
         return np.zeros(VALUES_PER_HAND, dtype=np.float32)
 

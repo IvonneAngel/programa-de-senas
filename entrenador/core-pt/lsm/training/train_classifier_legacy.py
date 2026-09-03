@@ -1268,7 +1268,6 @@ def masked_hand_reconstruction_loss(predicted: torch.Tensor, targets: torch.Tens
     return loss
 
 
-# TODO: partir run_epoch 280→3
 def run_epoch(model, loader, criterion, device, optimizer=None, classes=1, signer_loss_weight: float = 0.0, consistency_loss_weight: float = 0.0, consistency_temperature: float = 2.0, cross_signer_feature_mixup: bool = False, cross_signer_supervised_contrast: bool = False, contrastive_soft_dtw_alignment: bool = False, hopfield_prototype_memory: bool = False, use_log_euclidean_covariance_consistency: bool = False, uncertainty_log_variances: torch.nn.Parameter | None = None, use_sharpness_aware_minimization: bool = False, sam_rho: float = 0.05, group_dro_log_weights: torch.Tensor | None = None, group_dro_ldam: bool = False, mean_teacher=None, use_position_velocity_representation_consistency: bool = False, manual_factorial_ldam: bool = False, stochastic_dropout_consistency: bool = False, canonical_motion_vat: bool = False, train_prior_log_priors_tensor: torch.Tensor | None = None, classifier_coherence_weight: float = 0.0, focal_ldam_gamma: float | None = None, ldam_class_margins: torch.Tensor | None = None, ldam_late_weights: torch.Tensor | None = None, confusion_spectral_weight: float = 0.0, signer_covariance_weight: float = 0.0, signer_covariance_task: bool = False, motion_adaptive_temporal_coherence: bool = False, episodic_real_reference: bool = False, successor_temporal_relation_pairs: bool = False, successor_selective_core_relation: bool = False, soft_presence_weight: bool = False, masked_hand_reconstruction: bool = False, uniform_label_smoothing: bool = False, ecoc_auxiliary_head: bool = False, signer_vrex: bool = False, epoch: int | None = None, frozen_encoder_eval: bool = False):
     training = optimizer is not None
     model.train(training)
@@ -1577,7 +1576,6 @@ def json_safe_cli_args(args) -> dict:
     return {key: str(value) if isinstance(value, Path) else value for key, value in vars(args).items()}
 
 
-# TODO: partir main 350→3 helpers: setup_training, run_epoch_split, finalize_training
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest", type=Path, required=True)

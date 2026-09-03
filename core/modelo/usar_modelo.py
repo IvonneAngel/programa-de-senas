@@ -184,6 +184,7 @@ class AutoRuntimeModel:
 
 
 def _auto_score(prediction: RuntimePrediction) -> float:
+    """ auto score."""
     score = prediction.confidence + max(0.0, prediction.confidence_margin) * 0.35
     if prediction.mode == "alphabet":
         score += 0.08

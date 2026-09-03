@@ -28,6 +28,7 @@ def venv_python_path(app_dir: str | Path) -> Path:
 
 
 def requirements_file_path(app_dir: str | Path) -> Path:
+    """requirements file path."""
     app_path = Path(app_dir)
     tools = app_path / "herramientas" / "requisitos.txt"
     if tools.exists():
@@ -48,6 +49,7 @@ def build_import_probe_code(modules: list[str] | None = None) -> str:
 
 
 def _run_command(command: list[str], *, cwd: Path, timeout: int = 900) -> dict[str, Any]:
+    """ run command."""
     try:
         completed = subprocess.run(
             command,
@@ -73,6 +75,7 @@ def _run_command(command: list[str], *, cwd: Path, timeout: int = 900) -> dict[s
         }
 
 
+    """probe imports."""
 def probe_imports(python_path: str | Path, *, modules: list[str] | None = None) -> dict[str, Any]:
     python = Path(python_path)
     if not python.exists():

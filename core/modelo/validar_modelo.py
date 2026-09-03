@@ -12,6 +12,7 @@ class ModelValidationError(RuntimeError):
 
 
 def load_labels(labels_path: str | Path, *, min_labels: int = 1) -> list[str]:
+    """load labels."""
     path = Path(labels_path)
     if not path.exists():
         raise ModelValidationError(f"No existe archivo de etiquetas: {path}")

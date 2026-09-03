@@ -26,6 +26,7 @@ STRONG_SEQUENCES_PER_WORD = 50
 
 
 def normalize_label(label: str) -> str:
+    """normalize label."""
     normalized = label.strip().lower().replace(" ", "_")
     replacements = {
         "sí": "si",

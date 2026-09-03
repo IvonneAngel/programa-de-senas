@@ -12,6 +12,7 @@ from core.sistema.eventos import RuntimeEventLogger
 
 class ProcessRecorder:
     def __init__(self, args: argparse.Namespace, event_logger: RuntimeEventLogger):
+        """  init  ."""
         self.args = args
         self.event_logger = event_logger
         self.writer = None
@@ -20,6 +21,7 @@ class ProcessRecorder:
         self.started_at: float | None = None
         self.last_frame_at = 0.0
 
+    """update."""
     def update(self, frame) -> None:
         if not self.args.record_process:
             return

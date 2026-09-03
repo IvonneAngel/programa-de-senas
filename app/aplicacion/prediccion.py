@@ -31,6 +31,7 @@ class PredictionResult:
 
 class PredictionState:
     def __init__(self, args: argparse.Namespace):
+        """  init  ."""
         self.sequence: deque[np.ndarray] = deque(maxlen=args.frames)
         self.center_history: deque[tuple[float, float]] = deque(maxlen=18)
         self.confidence = 0.0
@@ -44,6 +45,7 @@ class PredictionState:
         self.center_history.clear()
         self.confidence = 0.0
 
+    """update."""
     def update(
         self,
         args: argparse.Namespace,
@@ -83,6 +85,7 @@ class PredictionState:
         result.translation = self.stabilizer.update(result.translation)
         result.fingers = fingers
         return result
+    """ from model."""
 
     def _from_model(self, args: argparse.Namespace, runtime_model: RuntimeModel, results) -> PredictionResult:
         self.sequence.append(extract_keypoints_for_size(results, args.keypoint_size))

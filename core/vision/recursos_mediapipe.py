@@ -15,6 +15,7 @@ def _has_mediapipe_bindings(package_dir: Path) -> bool:
 
 
 def _patch_mediapipe_init(package_dir: Path) -> None:
+    """ patch mediapipe init."""
     init_file = package_dir / "__init__.py"
     if not init_file.exists():
         return
@@ -27,6 +28,7 @@ def _patch_mediapipe_init(package_dir: Path) -> None:
 
 
 def mediapipe_ascii_site_dir() -> Path:
+    """mediapipe ascii site dir."""
     target_site = Path.home() / "Downloads" / "proyecto_senas_mediapipe_site"
     target_package = target_site / "mediapipe"
     if target_package.exists() and _has_mediapipe_bindings(target_package):

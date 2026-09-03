@@ -11,6 +11,7 @@ from core.base.rutas import ruta_videos
 
 
 def open_camera(index: int) -> cv2.VideoCapture:
+    """open camera."""
     cap = cv2.VideoCapture(index, cv2.CAP_DSHOW)
     cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 960)
@@ -18,6 +19,7 @@ def open_camera(index: int) -> cv2.VideoCapture:
     cap.set(cv2.CAP_PROP_FPS, 30)
     return cap
 
+    """read frame."""
 def read_frame(cap: cv2.VideoCapture, attempts: int = 60) -> np.ndarray | None:
     for _ in range(attempts):
         ok, frame = cap.read()
@@ -27,6 +29,7 @@ def read_frame(cap: cv2.VideoCapture, attempts: int = 60) -> np.ndarray | None:
     return None
 
 def create_process_recorder(frame: np.ndarray, args: argparse.Namespace):
+    """create process recorder."""
     if not args.record_process:
         return None, None, None
 

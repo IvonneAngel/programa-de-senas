@@ -7,6 +7,7 @@ from core.vision.puntos import RICH_KEYPOINT_SIZE
 
 
 def parse_args() -> argparse.Namespace:
+    """parse args."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--camera", type=int, default=0)
     parser.add_argument("--frames", type=int, default=FRAME_COUNT)

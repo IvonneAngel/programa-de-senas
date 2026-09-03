@@ -31,6 +31,7 @@ def landmark_xy(point, width: int, height: int) -> tuple[int, int]:
 
 
 def hand_box(results, width: int, height: int) -> tuple[int, int, int, int] | None:
+    """hand box."""
     points: list[tuple[int, int]] = []
     for hand in (results.left_hand_landmarks, results.right_hand_landmarks):
         if hand is None:

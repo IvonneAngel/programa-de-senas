@@ -9,6 +9,7 @@ def carpeta_proyecto() -> Path:
 
 
 def carpeta_base() -> Path:
+    """carpeta base."""
     current = carpeta_proyecto()
     for path in (current, *current.parents):
         if (path / "app").exists() and (path / "core").exists():
@@ -18,6 +19,7 @@ def carpeta_base() -> Path:
     return current
 
 
+    """ruta pruebas."""
 def ruta_pruebas() -> Path:
     env_path = os.environ.get("PROYECTO_SENAS_PRUEBAS")
     if env_path:
@@ -29,6 +31,7 @@ def ruta_pruebas() -> Path:
 
     return carpeta_base() / "pruebas"
 
+    """ruta archivos externos."""
 
 def ruta_archivos_externos() -> Path:
     env_path = os.environ.get("PROYECTO_SENAS_EXTERNOS")

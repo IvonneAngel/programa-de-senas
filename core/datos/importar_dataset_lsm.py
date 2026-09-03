@@ -80,6 +80,7 @@ def derive_label(relative_parts: tuple[str, ...]) -> str | None:
 
 
 def find_image_sequence_folders(dataset_dir: str | Path, *, min_images: int = 5) -> list[dict[str, Any]]:
+    """find image sequence folders."""
     root = Path(dataset_dir)
     if not root.exists():
         raise FileNotFoundError(f"Dataset folder not found: {root}")
@@ -105,6 +106,7 @@ def find_image_sequence_folders(dataset_dir: str | Path, *, min_images: int = 5)
     return rows
 
 
+    """sample image files."""
 def sample_image_files(files: list[Path], frame_count: int) -> list[Path]:
     if not files:
         raise ValueError("No image files provided")
@@ -113,6 +115,7 @@ def sample_image_files(files: list[Path], frame_count: int) -> list[Path]:
     indices = np.linspace(0, len(files) - 1, frame_count).round().astype(int)
     return [files[int(index)] for index in indices]
 
+    """resample sequence frames."""
 
 def resample_sequence_frames(frames: list[np.ndarray], frame_count: int, keypoint_size: int) -> np.ndarray:
     if not frames:
@@ -122,6 +125,7 @@ def resample_sequence_frames(frames: list[np.ndarray], frame_count: int, keypoin
         return source
     indices = np.linspace(0, source.shape[0] - 1, frame_count).round().astype(int)
     return source[indices].astype(np.float32)
+    """stable sequence path."""
 
 
 def stable_sequence_path(output_root: str | Path, label: str, relative_folder: str) -> Path:
@@ -138,6 +142,7 @@ def save_stable_sequence(output_root: str | Path, label: str, relative_folder: s
     path = stable_sequence_path(output_root, label, relative_folder)
     path.parent.mkdir(parents=True, exist_ok=True)
     np.save(path, np.asarray(sequence, dtype=np.float32))
+    """output root for label."""
     return path
 
 

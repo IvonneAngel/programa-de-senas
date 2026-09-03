@@ -13,6 +13,7 @@ def point_distance(a, b) -> float:
     return math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2 + (a.z - b.z) ** 2)
 
 def angle_degrees(a, b, c) -> float:
+    """angle degrees."""
     ab = np.array([a.x - b.x, a.y - b.y, a.z - b.z], dtype=np.float32)
     cb = np.array([c.x - b.x, c.y - b.y, c.z - b.z], dtype=np.float32)
     denom = float(np.linalg.norm(ab) * np.linalg.norm(cb))
@@ -22,6 +23,7 @@ def angle_degrees(a, b, c) -> float:
     return math.degrees(math.acos(cosine))
 
 def finger_states(hand_landmarks) -> dict[str, bool]:
+    """finger states."""
     points = hand_landmarks.landmark
     wrist = points[0]
 
@@ -34,12 +36,15 @@ def finger_states(hand_landmarks) -> dict[str, bool]:
     }
     return states
 
+    """hand center pixels."""
 def hand_center_pixels(hand_landmarks, width: int, height: int) -> tuple[int, int]:
     points = hand_landmarks.landmark
     x = int(np.mean([point.x for point in points]) * width)
     y = int(np.mean([point.y for point in points]) * height)
     return int(np.clip(x, 0, width - 1)), int(np.clip(y, 0, height - 1))
 
+    """near face."""
+    """near face."""
 def near_face(hand_landmarks, results, width: int, height: int) -> bool:
     face = face_box(results, width, height)
     if face is None:
@@ -53,6 +58,8 @@ def near_face(hand_landmarks, results, width: int, height: int) -> bool:
     y_min = face[1] + int(face_height * 0.30)
     y_max = face[3] + int(face_height * 0.45)
     return x_min <= cx <= x_max and y_min <= cy <= y_max
+    """basic translation."""
+    """basic translation."""
 
 def basic_translation(
     states: dict[str, bool],
@@ -68,6 +75,7 @@ def basic_translation(
         waving=has_horizontal_wave(center_history),
     )
 
+    """resolve runtime mode."""
 def choose_primary_hand(results):
     return results.right_hand_landmarks or results.left_hand_landmarks
 

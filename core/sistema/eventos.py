@@ -94,6 +94,7 @@ class RuntimeEventLogger:
 
 
 def list_sessions(root_dir: str | Path, limit: int = 10) -> list[dict[str, Any]]:
+    """list sessions."""
     root = Path(root_dir)
     if not root.exists():
         return []

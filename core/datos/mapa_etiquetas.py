@@ -48,6 +48,7 @@ def _sentence_text(spec: TargetSpec) -> str:
 
 
 def _add_alias(alias_map: dict[str, TargetSpec | None], alias: str, spec: TargetSpec) -> None:
+    """ add alias."""
     key = _source_key(alias)
     if not key:
         return
@@ -61,6 +62,7 @@ def _add_alias(alias_map: dict[str, TargetSpec | None], alias: str, spec: Target
 
 
 def alphabet_alias_map() -> dict[str, TargetSpec | None]:
+    """alphabet alias map."""
     aliases: dict[str, TargetSpec | None] = {}
     for spec in iter_alphabet_specs():
         letter = spec.display_label.replace("Letra ", "")
@@ -95,6 +97,7 @@ def default_data_dir_for_import(target_type: ImportTargetType) -> str:
     return str(root / "palabras y oraciones" / "otros")
 
 
+    """load label map."""
 def load_label_map(path: str | Path | None) -> dict[str, str]:
     if path is None:
         return {}
@@ -124,6 +127,7 @@ def load_label_map(path: str | Path | None) -> dict[str, str]:
                 rows[source] = target
     return rows
 
+    """ resolution from spec."""
 
 def _resolution_from_spec(
     source_label: str,
@@ -143,6 +147,7 @@ def _resolution_from_spec(
         display_label=spec.display_label,
         mapping_source=mapping_source,
     )
+    """ resolve explicit target."""
 
 
 def _resolve_explicit_target(
@@ -184,6 +189,7 @@ def _resolve_explicit_target(
             reason=f"label_map_target_out_of_contract:{exc}",
             mapping_source="label_map",
         )
+    """resolve import label."""
     return _resolution_from_spec(source_label, normalized_source, target_type, spec, mapping_source="label_map")
 
 

@@ -33,6 +33,7 @@ class AlphabetTarget:
 
 
 def safe_label(value: str) -> str:
+    """safe label."""
     normalized = value.strip().lower()
     replacements = {
         "ñ": "n_tilde",
@@ -52,6 +53,7 @@ def safe_label(value: str) -> str:
 
 
 def build_alphabet_targets() -> tuple[AlphabetTarget, ...]:
+    """build alphabet targets."""
     return tuple(
         AlphabetTarget(
             target_id=f"letter_{safe_label(letter)}",
@@ -63,6 +65,8 @@ def build_alphabet_targets() -> tuple[AlphabetTarget, ...]:
     )
 
 
+    """inspect sequence folder."""
+    """inspect sequence folder."""
 def inspect_sequence_folder(
     folder: Path,
     *,
@@ -91,6 +95,8 @@ def inspect_sequence_folder(
         "invalid_sequence_count": invalid_count,
     }
 
+    """build coverage report."""
+    """build coverage report."""
 
 def build_coverage_report(project_dir: str | Path) -> dict[str, Any]:
     root = Path(project_dir)
@@ -165,6 +171,8 @@ def build_coverage_report(project_dir: str | Path) -> dict[str, Any]:
             "honesty_rule": f"Targets are not recognized until real labeled .npy sequences load, match shape ({FRAME_COUNT}, {KEYPOINT_SIZE}), contain finite values, include non-empty landmark signal, and meet the data contract.",
         },
     }
+    """save coverage report."""
+    """save coverage report."""
 
 
 def save_coverage_report(project_dir: str | Path, output_dir: str | Path) -> dict[str, str]:

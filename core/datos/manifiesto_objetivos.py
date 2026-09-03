@@ -34,6 +34,7 @@ class TargetSpec:
 
 
 def iter_alphabet_specs() -> tuple[TargetSpec, ...]:
+    """iter alphabet specs."""
     specs: list[TargetSpec] = []
     for target in build_alphabet_targets():
         specs.append(
@@ -57,7 +58,9 @@ def iter_alphabet_specs() -> tuple[TargetSpec, ...]:
     return tuple(specs)
 
 
+    """iter sentence specs."""
 def iter_sentence_specs() -> tuple[TargetSpec, ...]:
+    """iter sentence specs."""
     specs: list[TargetSpec] = []
     for target in build_sentence_curriculum():
         specs.append(
@@ -89,6 +92,7 @@ def iter_target_specs() -> Iterable[TargetSpec]:
 def target_specs_as_dicts() -> list[dict[str, object]]:
     return [asdict(spec) for spec in iter_target_specs()]
 
+    """resolve target."""
 
 def resolve_target(target_type: TargetType, target: str) -> TargetSpec:
     normalized = target.strip()
@@ -116,6 +120,7 @@ def resolve_target(target_type: TargetType, target: str) -> TargetSpec:
         raise ValueError(f"Unknown sentence target: {target!r}")
 
     raise ValueError(f"Unsupported target type: {target_type!r}")
+    """save target manifest."""
 
 
 def save_target_manifest(output_dir: str | Path) -> dict[str, str]:

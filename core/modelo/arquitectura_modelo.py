@@ -4,6 +4,7 @@ from typing import Any
 
 
 def build_tiny_conv_classifier(frame_count: int, keypoint_size: int, class_count: int) -> Any:
+    """build tiny conv classifier."""
     import tensorflow as tf
 
     model = tf.keras.Sequential(
@@ -27,7 +28,9 @@ def build_tiny_conv_classifier(frame_count: int, keypoint_size: int, class_count
     return model
 
 
+    """build small conv classifier."""
 def build_small_conv_classifier(frame_count: int, keypoint_size: int, class_count: int) -> Any:
+    """build small conv classifier."""
     import tensorflow as tf
 
     model = tf.keras.Sequential(
@@ -51,6 +54,7 @@ def build_small_conv_classifier(frame_count: int, keypoint_size: int, class_coun
     )
     return model
 
+    """build lstm classifier."""
 
 def build_lstm_classifier(frame_count: int, keypoint_size: int, class_count: int) -> Any:
     import tensorflow as tf
@@ -71,6 +75,7 @@ def build_lstm_classifier(frame_count: int, keypoint_size: int, class_count: int
         metrics=["categorical_accuracy"],
     )
     return model
+    """build classifier."""
 
 
 def build_classifier(

@@ -267,6 +267,7 @@ DOMAIN_BLUEPRINTS: tuple[dict[str, object], ...] = (
 
 
 def build_sentence_curriculum(limit: int = SENTENCE_TARGET_COUNT) -> tuple[SentenceTarget, ...]:
+    """build sentence curriculum."""
     if limit < 1 or limit > SENTENCE_TARGET_COUNT:
         raise ValueError(f"limit must be between 1 and {SENTENCE_TARGET_COUNT}")
 

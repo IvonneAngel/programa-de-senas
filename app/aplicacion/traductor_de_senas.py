@@ -28,6 +28,7 @@ from core.sistema.eventos import RuntimeEventLogger
 
 
 def main() -> None:
+    """main."""
     args = parse_args()
     event_logger = RuntimeEventLogger(
         ruta_sesiones(),
