@@ -1,0 +1,10 @@
+{
+  "source": "v1 original point clouds in CC BY package",
+  "derivation": "subtract per-cloud centroid then divide by per-cloud maximum Euclidean radius",
+  "samples_derived": 315,
+  "unique_content_representatives": 311,
+  "quarantined_duplicate_copies": 4,
+  "split_assigned": false,
+  "trained_or_evaluated": false,
+  "mobile_or_positions126_compatible": false
+}
