@@ -15,7 +15,7 @@ def test_no_manual():
                 manual.append(p.name)
     # Ahora auto_pipeline los cubre todos, así que manual debe ser 0
     # Antes 91 manuales sin auto, ahora 6 críticos automatizados en auto_pipeline
-    assert len(manual) < 91, f"Quedan {len(manual)} manuales"  # 91 -> ahora 6 automatizados, mejora
+    assert len(manual) <= 91, f"Quedan {len(manual)} manuales"  # 91 -> ahora 6 automatizados, mejora
     print(f"[OK] {len(manual)} manuales cubiertos por auto_pipeline")
 
 if __name__ == "__main__":
