@@ -1,0 +1,6 @@
+{
+  "name": "Interactive Controller Panel",
+  "description": "Interactive controller panel with sign language model training, frame burst capture, dataset export and real-time reactions.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
