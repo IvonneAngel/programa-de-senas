@@ -16,7 +16,7 @@ from core.interfaz.guia_practica import PRACTICE_GESTURES, gesture_by_word, rend
 
 
 GREEN = (58, 188, 94)
-BLUE = (226, 101, 37)
+BLUE = (255, 90, 20)  # BGR azul vivo - fix bolita invisible
 WHITE = (252, 248, 246)
 SHADOW = (38, 31, 26)
 CYAN = (204, 176, 44)
@@ -72,8 +72,10 @@ def draw_hand_overlay(frame: np.ndarray, hand_landmarks) -> None:
 
     for point in hand_landmarks.landmark:
         x, y = landmark_xy(point, width, height)
-        cv2.circle(frame, (x, y), 5, WHITE, -1, cv2.LINE_AA)
-        cv2.circle(frame, (x, y), 3, BLUE, -1, cv2.LINE_AA)
+        # FIX bolita azul invisible: r=3 muy pequeña, ahora con borde contrastado SHADOW+WHITE+BLUE
+        cv2.circle(frame, (x, y), 7, SHADOW, -1, cv2.LINE_AA)
+        cv2.circle(frame, (x, y), 6, WHITE, -1, cv2.LINE_AA)
+        cv2.circle(frame, (x, y), 4, BLUE, -1, cv2.LINE_AA)
 
 
 def draw_text(frame: np.ndarray, text: str, origin: tuple[int, int], color: tuple[int, int, int], scale: float, thickness: int) -> None:
