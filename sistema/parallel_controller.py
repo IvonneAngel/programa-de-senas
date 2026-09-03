@@ -1,25 +1,25 @@
-"""Controla paralelismo DataLoader, MediaPipe, OpenCV."""
+"""Controla paralelismo DataLoader, MediaPipe, OpenCV. Config: 6 P-cores + 8 E-cores + RTX 4060, batch auto, prefetch 4."""
 import os, multiprocessing
 
 def get_workers():
-    """Workers óptimos: usa P-cores fuertes (no solo 2)."""
+    """Workers P-cores fuertes: 6 P-cores i7-13650HX."""
     import psutil
-    physical = psutil.cpu_count(logical=False) or 6
-    logical = psutil.cpu_count(logical=True) or 12
-    # Detecta hybrid: si logical > physical, hay E-cores
-    if logical > physical:
-        p_cores = 6  # i7-13650HX: 6 P-cores fuertes
-        return p_cores
+    physical = psutil.cpu_count(logical=False) or 14
+    logical = psutil.cpu_count(logical=True) or 20
+    if logical > physical:  # hybrid detectado
+        return 6  # 6 P-cores fuertes (performance cores)
     return min(8, max(4, physical-2))
 
 def get_mediapipe_workers():
-    """E-cores para MediaPipe/OpenCV background."""
+    """E-cores para MediaPipe/OpenCV background: 8 E-cores."""
     import psutil
-    physical = psutil.cpu_count(logical=False) or 6
-    return max(2, physical - 6)  # 8 E-cores -> 4 workers
+    physical = psutil.cpu_count(logical=False) or 14
+    if physical >= 14:
+        return 8  # 8 E-cores eficiencia
+    return max(2, physical - 6)
 
 def parallel_config():
-    """Config para entrenamiento rápido."""
+    """Config para RTX 4060: batch auto, prefetch 4, pin_memory, persistent_workers."""
     from .gpu_detector import detect_gpu
     from .memory_analyzer import auto_batch, get_vram
     import psutil
@@ -30,12 +30,19 @@ def parallel_config():
         "device": gpu["device"],
         "priority": gpu["priority"],
         "batch_size": auto_batch(vram, ram),
-        "num_workers": get_workers(),  # 6 P-cores fuertes
-        "mediapipe_workers": get_mediapipe_workers(),  # 4 E-cores
+        "num_workers": get_workers(),  # 6 P-cores
+        "mediapipe_workers": get_mediapipe_workers(),  # 8 E-cores
+        "total_workers": get_workers() + get_mediapipe_workers(),  # 14
         "pin_memory": gpu["device"]=="cuda",
-        "prefetch_factor": 4,  # subido de 2 a 4 para RTX
+        "prefetch_factor": 4,
         "persistent_workers": True,
     }
 
 if __name__ == "__main__":
-    print(parallel_config())
+    cfg = parallel_config()
+    print(cfg)
+    assert cfg["num_workers"] == 6, "P-cores deben ser 6"
+    assert cfg["mediapipe_workers"] == 8, "E-cores deben ser 8"
+    assert cfg["total_workers"] == 14, "total 6P+8E=14"
+    print("[OK] 6P+8E=14 + RTX 4060 prefetch4")
+

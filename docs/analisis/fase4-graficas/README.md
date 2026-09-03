@@ -1,4 +1,3 @@
-# fase4-graficas
+# fase4-graficas — pendiente
 
-
-Gráficas: accuracy_curve.png
+- Curvas accuracy/loss y confusion se generan tras entrenamiento

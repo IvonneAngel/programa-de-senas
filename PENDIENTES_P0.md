@@ -21,3 +21,6 @@
 - [ ] P0: Ruta `Downloads\proyecto de señas archivos externos` frágil → mover a `app/assets/models` (ya hay .task ahí) y usar relativo
 
 > Todo pendiente, no aplicado aún como pediste.
+
+## Siguiente repo (pendiente, foco letras)
+- [ ] Zenodo 18330565 (121 glosas dinámicas) https://zenodo.org/records/18330565 - PENDIENTE, no instalar ahora, foco en letras (21 clases, 0.595)

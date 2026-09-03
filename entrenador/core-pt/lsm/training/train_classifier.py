@@ -217,13 +217,53 @@ def read_manifest(path: Path, task: str) -> list[dict]:
             continue
         row["split_active"] = active_split
         output.append(row)
+    # Fallback Mendeley 6rj76z6y3n: manifest sin columna task, con split/status/label
+    if not output and rows and "task" not in rows[0]:
+        for row in rows:
+            status = str(row.get("status", "")).strip().lower()
+            split_val = str(row.get("split", "")).strip().lower()
+            if status not in {"", "ok"}:
+                continue
+            if split_val not in accepted:
+                continue
+            # Mapear a esquema successor_positions126
+            row["task"] = manifest_task
+            row["feature_status"] = "ok"
+            row["split_active"] = split_val
+            row["split_model"] = split_val
+            row["split_project"] = split_val
+            # label_lsm desde label_id / label / word_id
+            lbl = str(row.get("label_id") or row.get("label") or row.get("word_id") or "").strip()
+            if not lbl:
+                continue
+            row["label_lsm"] = lbl.zfill(3) if lbl.isdigit() else lbl
+            # signer_id sintético desde sample_id (2 primeros dígitos)
+            sid_raw = str(row.get("sample_id", "")).strip()
+            try:
+                signer_num = int(sid_raw[:2]) if sid_raw[:2].isdigit() else 1
+                signer_num = ((signer_num - 1) % 7) + 1
+            except:
+                signer_num = 1
+            row["signer_id"] = f"S{signer_num:02d}"
+            # normalizar feature_path a forward slash
+            fp = str(row.get("feature_path", "")).replace("\\", "/").replace("\\", "/")
+            row["feature_path"] = fp
+            output.append(row)
     return output
 
 
 def feature_path(row: dict, cache_root: Path) -> Path:
-    explicit = str(row.get("feature_path", "")).strip()
+    explicit = str(row.get("feature_path", "")).strip().replace("\\", "/")
     if explicit:
-        return cache_root / explicit
+        candidate = cache_root / explicit
+        if candidate.is_file():
+            return candidate
+        # Fallback mendeley_6rj76z6y3n subcarpeta
+        alt = cache_root / "mendeley_6rj76z6y3n" / explicit
+        if alt.is_file():
+            return alt
+        # También probar sin subcarpeta bone_vector126 directa
+        return candidate
     return cache_root / f"{row['sample_id']}.npy"
 
 
@@ -1694,8 +1734,10 @@ def main() -> int:
     w89_quality_by_sample = w89_train_quality_by_sample(train_rows, args.w89_presence_cache_root) if args.task == "isolated_word_w89_class_conditional_hand_quality_curriculum_ldam" else None
 
     if args.device == "cuda" and not torch.cuda.is_available():
-        raise SystemExit("Se solicitó CUDA pero no está disponible")
-    device = torch.device("cuda" if args.device == "cuda" or (args.device == "auto" and torch.cuda.is_available()) else "cpu")
+        print(json.dumps({"warning": "CUDA solicitado pero no disponible, usando CPU (RTX 4060 no disponible en este entorno)", "device_fallback": "cpu"}, ensure_ascii=False))
+        device = torch.device("cpu")
+    else:
+        device = torch.device("cuda" if args.device == "cuda" or (args.device == "auto" and torch.cuda.is_available()) else "cpu")
     model_kwargs = {"frames": config["frames"], "feature_dim": config["features"], "classes": len(labels_list)}
     if args.task == "isolated_word_signer_invariant":
         model_kwargs |= {"signer_classes": len(signer_labels), "adversarial_scale": args.signer_loss_weight}

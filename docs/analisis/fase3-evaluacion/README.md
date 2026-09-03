@@ -1,4 +1,4 @@
-# fase3-evaluacion
+# fase3-evaluacion — pendiente
 
-
-Evaluación: val 0.595, test cerrado
+- Split train/val/test 70/15/15 deterministico
+- Métricas por registrar en `metrics.json`

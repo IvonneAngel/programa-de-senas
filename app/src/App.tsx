@@ -7,6 +7,8 @@ import StickerDrawer from "./components/StickerDrawer";
 import SettingsPanel from "./components/SettingsPanel";
 import TrainingPanel from "./components/TrainingPanel";
 import Dock from "./components/Dock";
+import AuroraBallWithLetter from "./components/AuroraBallWithLetter";
+import { buildSentenceFromEntries, truncateEntries, type WordEntry } from "./grammar/sentence";
 
 export default function App() {
   const [panelActive, setPanelActive] = useState(false);
@@ -29,11 +31,20 @@ export default function App() {
   // Controls visibility toggle (via double click/tap)
   const [controlsVisible, setControlsVisible] = useState(true);
 
+  // Traductor LSM: texto que muestra la bolita (viene del modelo) + oración general por pausas (92k general)
+  const [translation, setTranslation] = useState<string>("");
+  const [currentWord, setCurrentWord] = useState<string>(""); // prefijo deletreado: "H" -> "HO" -> ghost sugiere
+  const [sentenceEntries, setSentenceEntries] = useState<WordEntry[]>([]);
+  const lastWordTimeRef = useRef<number>(0);
+  const [nowTick, setNowTick] = useState<number>(Date.now());
+
   // Refs for media stream and touch handling
   const mainDisplayRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const lastTapRef = useRef<number>(0);
+  const lastSendRef = useRef<number>(0);
+  const sendingRef = useRef<boolean>(false);
 
   // Menu toggles with instant audio feedback
   const toggleMenuExpansion = useCallback(() => {
@@ -205,6 +216,123 @@ export default function App() {
     };
   }, [cameraActive, callConnected]);
 
+  // tick para repintar puntuación final sin recalcular Date.now() en render + cerrar palabra deletreada por pausa larga
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setNowTick(Date.now());
+      // si hay palabra deletreada y gap >1400, la cierra como palabra completa
+      if (currentWord && Date.now() - lastWordTimeRef.current > 1400) {
+        setSentenceEntries((prev) => {
+          const entry: WordEntry = { word: currentWord.toLowerCase(), gapBeforeMs: prev.length === 0 ? null : 1400 };
+          return truncateEntries([...prev, entry]);
+        });
+        setCurrentWord("");
+        setTranslation("");
+      }
+    }, 500);
+    return () => window.clearInterval(id);
+  }, [currentWord]);
+
+  // Traductor LSM: solo muestra texto cuando el modelo reconoce la seña (sin texto falso) + buffer oración general por pausas (general 92k)
+  useEffect(() => {
+    if (!cameraActive || !callConnected) {
+      setTranslation("");
+      setCurrentWord("");
+      setSentenceEntries([]);
+      return;
+    }
+    let cancelled = false;
+    const interval = window.setInterval(async () => {
+      if (cancelled || sendingRef.current) return;
+      const video = videoRef.current;
+      if (!video || video.readyState < 2) return;
+      const now = performance.now();
+      if (now - lastSendRef.current < 700) return;
+      lastSendRef.current = now;
+      sendingRef.current = true;
+      try {
+        const w = Math.min(420, video.videoWidth || 420);
+        const h = Math.max(1, Math.round((w * (video.videoHeight || 420)) / (video.videoWidth || 420)));
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        ctx.drawImage(video, 0, 0, w, h);
+        const image = canvas.toDataURL("image/jpeg", 0.68);
+        const controller = new AbortController();
+        const tid = window.setTimeout(() => controller.abort(), 4000);
+        const res = await fetch("/api/prediccion-frame", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ image }),
+          signal: controller.signal,
+        });
+        window.clearTimeout(tid);
+        if (!res.ok) return;
+        const data = (await res.json()) as { translation?: string; hands?: unknown[] };
+        const t = String(data.translation || "").trim();
+        const hidden = new Set(["cargando modelo", "lenguaje de señas", "lenguaje de senas", "leyendo seña", "leyendo sena", "modelo lsm no entrenado", "modelo no seguro", "muestra tu mano", "palabra aun no validada", "palabra aún no validada"]);
+        if (!t || hidden.has(t.toLowerCase())) {
+          if (data.hands && (data.hands as unknown[]).length > 0) setTranslation("");
+          return;
+        }
+        if (!cancelled) {
+          const isLetter = t.length === 1 && /^[A-Za-zÑñ]$/.test(t);
+          if (isLetter) {
+            // deletreo: acumula letras en currentWord, ej H -> HO -> ghost "la"/"spital"
+            const now = Date.now();
+            const gap = lastWordTimeRef.current ? now - lastWordTimeRef.current : 0;
+            // si pausa larga >1400, la palabra anterior se cierra y se manda a oración
+            setCurrentWord((prev) => {
+              const newPref = gap > 1400 && prev ? prev : prev + t;
+              // si gap largo y había palabra, la cerramos como palabra completa
+              if (gap > 1400 && prev) {
+                setSentenceEntries((sPrev) => {
+                  const entry: WordEntry = { word: prev.toLowerCase(), gapBeforeMs: sPrev.length === 0 ? null : gap };
+                  return truncateEntries([...sPrev, entry]);
+                });
+                return t;
+              }
+              return newPref;
+            });
+            setTranslation(t);
+            lastWordTimeRef.current = now;
+            // no push a sentence aún, solo deletreo
+          } else {
+            // palabra completa del modelo de palabras: cierra currentWord si había deletreo pendiente
+            setCurrentWord((prev) => {
+              if (prev) {
+                setSentenceEntries((sPrev) => {
+                  const entry: WordEntry = { word: prev.toLowerCase(), gapBeforeMs: sPrev.length === 0 ? null : 0 };
+                  return truncateEntries([...sPrev, entry]);
+                });
+              }
+              return "";
+            });
+            setTranslation(t);
+            const now = Date.now();
+            const gap = lastWordTimeRef.current ? now - lastWordTimeRef.current : null;
+            setSentenceEntries((prev) => {
+              if (prev.length > 0 && prev[prev.length - 1].word === t.toLowerCase() && (gap ?? 0) < 400) return prev;
+              const entry: WordEntry = { word: t.toLowerCase(), gapBeforeMs: prev.length === 0 ? null : gap };
+              return truncateEntries([...prev, entry]);
+            });
+            lastWordTimeRef.current = now;
+          }
+        }
+      } catch {
+        // sin texto falso: si no hay modelo/API, se queda vacío hasta que haya reconocimiento real
+      } finally {
+        sendingRef.current = false;
+      }
+    }, 700);
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+    };
+  }, [cameraActive, callConnected]);
+
   return (
     <div
       onDoubleClick={handleDoubleClick}
@@ -243,6 +371,23 @@ export default function App() {
           reactions={reactions}
           onRemoveReaction={handleRemoveReaction}
         />
+
+        {/* BOLA AURORA ARRASTRABLE — muestra prefijo deletreado (H→HO) + GhostWord 92k, o palabra completa */}
+        <AuroraBallWithLetter letra={currentWord || translation || null} />
+        {/* ORACIÓN GENERAL — acumula lo que enseñas (92k), puntuación por pausa donde ocurrió */}
+        {sentenceEntries.length > 0 && (
+          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 max-w-[90%] max-h-24 overflow-y-auto px-4 py-2 rounded-2xl bg-black/70 backdrop-blur-md border border-white/10 text-white text-sm text-center leading-relaxed break-words" style={{ fontFamily: '"Sheriff Sans", sans-serif' }}>
+            {buildSentenceFromEntries(sentenceEntries)}
+            {/* muestra ,/. final si gap actual largo */}
+            {(() => {
+              const gap = Date.now() - lastWordTimeRef.current;
+              if (gap >= 1400) return ".";
+              if (gap >= 600) return ",";
+              return "";
+            })()}
+            <button onClick={() => setSentenceEntries([])} className="ml-2 text-white/50 hover:text-white text-xs" aria-label="Limpiar oración">✕</button>
+          </div>
+        )}
 
         {/* FEED DE CÁMARA */}
         <CameraFeed

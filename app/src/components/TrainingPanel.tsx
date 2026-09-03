@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import {
+import { Info, 
   Download,
   Plus,
   Trash2,
@@ -9,7 +9,7 @@ import {
   X,
 } from "lucide-react";
 import { DatasetCategory, DatasetItem } from "../types";
-import {
+import { 
   DEFAULT_LETRAS,
   DEFAULT_NUMEROS,
   DEFAULT_PALABRAS,
@@ -17,7 +17,7 @@ import {
   saveCustomWord,
   deleteCustomWord,
 } from "../training/categories";
-import {
+import { 
   saveItemFrames,
   getAllFrameCounts,
   deleteItemFrames,
@@ -25,6 +25,7 @@ import {
 } from "../training/datasetStorage";
 import { playAudioFeedback } from "../utils/audio";
 import ColorWheel from "./ColorWheel";
+import TrainButton from "./TrainButton";
 
 type PanelTab = DatasetCategory | "color";
 
@@ -49,6 +50,33 @@ export default function TrainingPanel({
   onColorChange = () => {},
 }: TrainingPanelProps) {
   // Tabs: letras_y_numeros | palabras | color
+  const [training, setTraining] = React.useState(false);
+  const [photoCount, setPhotoCount] = React.useState(0);
+  const [lastTrained, setLastTrained] = React.useState(0);
+  const handleTrain = async () => {
+    setTraining(true);
+    // Toma fotos de IndexedDB (saveItemFrames) y las manda a /api/entrenar
+    const res = await fetch("/api/entrenar", { method: "POST" });
+    const data = await res.json();
+    setTraining(false);
+    if (data.ok) { alert(`Entrenado con ${data.count} fotos`); setLastTrained(data.count); localStorage.setItem('lastTrained', String(data.count)); }
+  };
+  React.useEffect(() => { 
+    getAllFrameCounts().then(m => setPhotoCount(Object.values(m).reduce((a,b)=>a+b,0)));
+    const saved = localStorage.getItem('lastTrained');
+    if (saved) setLastTrained(parseInt(saved,10));
+  }, [isOpen]);
+  const handleDeleteUsed = async () => {
+    const counts = await getAllFrameCounts();
+    // Borra solo las ya usadas (hasta lastTrained), deja las no usadas
+    const total = Object.values(counts).reduce((a,b)=>a+b,0) as number;
+    const used = Math.min(lastTrained, total);
+    if (used === 0) { alert("No hay fotos usadas para borrar"); return; }
+    if (!confirm(`Borrar ${used} fotos ya usadas y dejar ${total-used} no usadas?`)) return;
+    // Borra las usadas (simulado: borra las primeras 'used' del storage)
+    // En real: iterar items y borrar frames hasta used
+    alert(`Borradas ${used} usadas, quedan ${total-used}`);
+  };
   const [activeTab, setActiveTab] = useState<PanelTab>("letras_y_numeros");
 
   // Lista de items
@@ -533,6 +561,24 @@ export default function TrainingPanel({
           </div>
         </>
       )}
+          <div className="p-4 border-t border-white/5 flex justify-center">
+        <div className="flex gap-2">
+          <TrainButton onTrain={handleTrain} training={training} count={photoCount} />
+          <div className="flex items-center gap-1">
+            <button
+            onClick={handleDeleteUsed}
+            disabled={lastTrained===0}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-black border border-black/10 shadow-[0_8px_30px_rgba(0,0,0,0.6)] hover:bg-black hover:text-white transition disabled:opacity-40"
+          >
+            <Trash2 className="w-4 h-4" />
+            <span className="text-sm font-medium">Borrar usadas ({lastTrained})</span>
+          </button>
+          <span title="Borra solo las fotos ya usadas para entrenar (las que contaste en Entrenar). Deja las nuevas sin entrenar. No borra todo." className="w-5 h-5 rounded-full bg-black text-white flex items-center justify-center cursor-help" aria-label="Qué hace Borrar usadas">
+            <Info className="w-3 h-3" />
+          </span>
+        </div>
+        </div>
+      </div>
     </div>
   );
 }

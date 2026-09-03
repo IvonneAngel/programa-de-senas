@@ -1,0 +1,100 @@
+﻿<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>
+  html,body{margin:0;padding:0;background:transparent;overflow:hidden}
+  #host{width:28px;height:28px;border-radius:50%;overflow:hidden;display:block}
+  #host > [data-paper-shader], #host .aurora-library-host{width:100%;height:100%;display:block}
+  :where([data-paper-shader]){position:relative;isolation:isolate}
+  :where([data-paper-shader]) canvas{position:absolute;inset:0;width:100%;height:100%;display:block;border-radius:inherit}
+</style>
+</head>
+<body>
+<div id="host" class="aurora-shell"><span id="root" class="aurora-library-host"></span></div>
+<script src="./vendor/react-18.3.1.production.min.js"></script>
+<script src="./vendor/react-dom-18.3.1.production.min.js"></script>
+<script src="./vendor/paper-shaders.aurora.js"></script>
+<script src="./vendor/disenos.aurora.js"></script>
+<script src="./vendor/render.aurora.js"></script>
+<script>
+(function(){
+  // montar Aurora exacta igual que thinking-visualizer app.js mountExactAurora
+  function fixShaderSize(){
+    document.querySelectorAll('#root [data-paper-shader]').forEach(function(el){
+      var m=el.paperShaderMount;
+      if(!m) return;
+      if(!m.devicePixelsSupported){
+        var r=el.getBoundingClientRect();
+        if(r.width>0){
+          var dpr=Math.max(1, window.devicePixelRatio);
+          m.devicePixelsSupported=true;
+          m.parentWidth=r.width;
+          m.parentHeight=r.height;
+          m.parentDevicePixelWidth=r.width*dpr;
+          m.parentDevicePixelHeight=r.height*dpr;
+        }
+      }
+      m.handleResize();
+    });
+  }
+  // ponytail: paletas hermosas cada 5min (azul -> morado -> rojo -> aleatorias bonitas)
+  var PALETAS_HERMOSAS = [
+    ["#0df2c1","#0b7cff","#74efff","#1a2cff"], // 0 azul aurora original
+    ["#7300ff","#eba8ff","#00bfff","#2a00ff"], // 1 morado azul
+    ["#ffd9f5","#ff006e","#8338ec","#3a0ca3"], // 2 rojo-morado
+    ["#ff7a18","#ffd166","#ff4d6d","#5f0f40"], // 3 naranja rojo
+    ["#f6a6ff","#7027c9","#ff66c4","#20115b"], // 4 púrpura rosa
+    ["#b9ecff","#006494","#00a6a6","#072ac8"], // 5 ocean
+    ["#8dff6a","#1f7a1f","#d7ff70","#00c48c"]  // 6 verde aurora
+  ];
+  var paletaIdx = 0;
+  var auroraRoot = null;
+  function renderAurora(design, colors){
+    if(!auroraRoot) return;
+    auroraRoot.render(a.jsx($R, {
+      speed: design.speed,
+      softness: design.softness,
+      intensity: design.intensity,
+      noise: design.noise,
+      shape: design.forma,
+      colors: colors,
+      colorBack: '#ffffff00'
+    }));
+    fixShaderSize();
+  }
+  function mount(){
+    var host=document.getElementById('root');
+    var design=window.DISENOS && window.DISENOS.find(function(x){return x.id==='aurora'});
+    if(!design || typeof ReactDOM==='undefined' || typeof $R!=='function'){
+      console.error('Aurora deps faltantes', {hasDesign: !!design, hasRDOM: typeof ReactDOM, hasR: typeof $R});
+      return;
+    }
+    auroraRoot=ReactDOM.createRoot(host);
+    renderAurora(design, PALETAS_HERMOSAS[0]);
+    fixShaderSize();
+    setTimeout(fixShaderSize,100);
+    setInterval(fixShaderSize,1000);
+    document.addEventListener('visibilitychange', fixShaderSize);
+    // cambio cada 5 minutos: azul -> morado -> rojo -> aleatorias hermosas
+    setInterval(function(){
+      paletaIdx = (paletaIdx + 1) % PALETAS_HERMOSAS.length;
+      // si quieres aleatorio puro, descomenta: paletaIdx = Math.floor(Math.random()*PALETAS_HERMOSAS.length);
+      renderAurora(design, PALETAS_HERMOSAS[paletaIdx]);
+      try { console.log('[Aurora] color ->', PALETAS_HERMOSAS[paletaIdx].join(' ')); } catch {}
+    }, 5*60*1000);
+    // exponer para debug manual desde parent: postMessage {type:'aurora-set-palette', idx:2}
+    window.addEventListener('message', function(e){
+      if(e.data && e.data.type==='aurora-set-palette' && typeof e.data.idx==='number'){
+        paletaIdx = e.data.idx % PALETAS_HERMOSAS.length;
+        renderAurora(design, PALETAS_HERMOSAS[paletaIdx]);
+      }
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', mount);
+  else mount();
+})();
+</script>
+</body>
+</html>
