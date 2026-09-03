@@ -1,26 +1,30 @@
-# PENDIENTES P0 - Antes de entrenar (4 auditorías distintas)
+# Pendientes prioritarios del estado vigente
 
-## Seguridad (BAJO-MEDIO)
-- [ ] P0: `tf.keras.models.load_model` con safe-mode (bloquear Lambda)
-- [ ] P0: `servidor_interfaz.py` limitar `Content-Length` y tamaño imagen en `/api/prediccion-frame` (DoS base64)
-- [ ] P0: Validar `subprocess.Popen` en `/api/abrir-traductor` (solo 127.0.0.1)
+## Integración funcional
 
-## Performance
-- [ ] P0: `tcn_legacy.py` 2466 líneas → usar split `tcn_part1..5` (74 clases) y borrar legacy como fuente
-- [ ] P0: `train_classifier.py:main` 350 y `run_epoch` 280 → partir en helpers (ya hay TODO)
-- [ ] P0: DataLoader añadir `prefetch_factor`, `persistent_workers`, `pin_memory`
+- [ ] Implementar y versionar el backend que atienda `POST /api/prediccion-frame` en `127.0.0.1:8765`.
+- [ ] Definir el contrato de entrada del backend: tamaño de imagen, extracción MediaPipe, ventana temporal y forma exacta del tensor.
+- [ ] Conectar el TCN PyTorch o un modelo runtime validado con la interfaz React; no reutilizar el servidor bajo `_desactualizado/` como si fuera vigente.
+- [ ] Implementar `POST /api/entrenar` o desactivar la acción hasta que exista un flujo de entrenamiento real y documentado.
+
+## Modelo y evaluación
+
+- [ ] Completar el entrenamiento MSL-ABC, que fue cortado durante la primera época, y registrar métricas finales de validación y prueba.
+- [ ] Evaluar por firmante y conservar una separación de participantes que no se use para seleccionar candidatos.
+- [ ] Mantener separados el experimento `successor_positions126` de 249 etiquetas y el experimento MSL-ABC de 74 clases.
+- [ ] Validar forma, etiquetas, checkpoint y dispositivo antes de cargar un modelo en runtime.
 
 ## Datos
-- [ ] P0: Completar 5 manifests (faltan 2 csv), unificar `label_map.json` 249 vs `labels.json` 145 (104 perdidos)
-- [ ] P0: Implementar splits S01-S07/S08/S09 (ahora P01-P11, 0 filas ok)
-- [ ] P0: Añadir `SHA256` por foto + `is_duplicate` para evitar 11-12x stem duplicado
 
-## UX
-- [ ] P0: `App.tsx` estados vacíos `blocked/idle` → mostrar mensaje + aria-live
-- [ ] P0: `panel.ps1` carrera puerto 8765 → esperar a que `127.0.0.1:8765` esté listo antes de abrir browser
-- [ ] P0: Ruta `Downloads\proyecto de señas archivos externos` frágil → mover a `app/assets/models` (ya hay .task ahí) y usar relativo
+- [ ] Versionar o documentar de forma reproducible los manifiestos usados para el checkpoint MSL-ABC.
+- [ ] Registrar participantes, licencia, duplicados y estado de cada muestra sin confundir el mapa nominal de 249 etiquetas con clases entrenadas.
+- [ ] Mantener los datos procesados fuera del repositorio solo con una instrucción de reconstrucción verificable.
 
-> Todo pendiente, no aplicado aún como pediste.
+## Autocompletado y UX
 
-## Siguiente repo (pendiente, foco letras)
-- [ ] Zenodo 18330565 (121 glosas dinámicas) https://zenodo.org/records/18330565 - PENDIENTE, no instalar ahora, foco en letras (21 clases, 0.595)
+- [ ] Añadir confianza visible, alternativas y rechazo para que la sugerencia no parezca una traducción confirmada.
+- [ ] Mostrar estados `backend no conectado`, `modelo cargando`, `sin manos detectadas` y `predicción rechazada` con `aria-live`.
+- [x] Corregir el import faltante de `TrainButton` y verificar TypeScript/build.
+- [x] Sustituir el borrado simulado del panel por borrado real de frames antiguos en IndexedDB.
+
+> La interfaz puede capturar y exportar datos aunque el backend de predicción todavía no esté incluido.

@@ -21,6 +21,7 @@ import {
   saveItemFrames,
   getAllFrameCounts,
   deleteItemFrames,
+  deleteOldestFrames,
   exportDatasetAsZip,
 } from "../training/datasetStorage";
 import { playAudioFeedback } from "../utils/audio";
@@ -54,12 +55,33 @@ export default function TrainingPanel({
   const [photoCount, setPhotoCount] = React.useState(0);
   const [lastTrained, setLastTrained] = React.useState(0);
   const handleTrain = async () => {
+    if (photoCount === 0) {
+      alert("Captura al menos un frame antes de solicitar entrenamiento");
+      return;
+    }
+
     setTraining(true);
-    // Toma fotos de IndexedDB (saveItemFrames) y las manda a /api/entrenar
-    const res = await fetch("/api/entrenar", { method: "POST" });
-    const data = await res.json();
-    setTraining(false);
-    if (data.ok) { alert(`Entrenado con ${data.count} fotos`); setLastTrained(data.count); localStorage.setItem('lastTrained', String(data.count)); }
+    try {
+      // El frontend solo solicita el entrenamiento; el backend debe leer el dataset
+      // exportado o la integración que se configure para /api/entrenar.
+      const res = await fetch("/api/entrenar", { method: "POST" });
+      if (!res.ok) {
+        throw new Error(`El backend respondió ${res.status}`);
+      }
+      const data = (await res.json()) as { ok?: boolean; count?: number; message?: string };
+      if (!data.ok) {
+        throw new Error(data.message || "El backend no confirmó el entrenamiento");
+      }
+      const count = Math.max(0, Number(data.count) || 0);
+      alert(`Entrenamiento confirmado con ${count} fotos`);
+      setLastTrained(count);
+      localStorage.setItem("lastTrained", String(count));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Error desconocido";
+      alert(`No se pudo entrenar: ${message}. La app sigue permitiendo capturar y exportar el dataset.`);
+    } finally {
+      setTraining(false);
+    }
   };
   React.useEffect(() => { 
     getAllFrameCounts().then(m => setPhotoCount(Object.values(m).reduce((a,b)=>a+b,0)));
@@ -68,14 +90,24 @@ export default function TrainingPanel({
   }, [isOpen]);
   const handleDeleteUsed = async () => {
     const counts = await getAllFrameCounts();
-    // Borra solo las ya usadas (hasta lastTrained), deja las no usadas
-    const total = Object.values(counts).reduce((a,b)=>a+b,0) as number;
+    const total = Object.values(counts).reduce((a, b) => a + b, 0);
     const used = Math.min(lastTrained, total);
-    if (used === 0) { alert("No hay fotos usadas para borrar"); return; }
-    if (!confirm(`Borrar ${used} fotos ya usadas y dejar ${total-used} no usadas?`)) return;
-    // Borra las usadas (simulado: borra las primeras 'used' del storage)
-    // En real: iterar items y borrar frames hasta used
-    alert(`Borradas ${used} usadas, quedan ${total-used}`);
+    if (used === 0) {
+      alert("No hay frames contabilizados para borrar");
+      return;
+    }
+    if (!confirm(`Borrar los ${used} frames más antiguos y conservar ${total - used} frames nuevos?`)) return;
+
+    try {
+      const deleted = await deleteOldestFrames(used);
+      setLastTrained(0);
+      localStorage.setItem("lastTrained", "0");
+      await refreshDataset();
+      alert(`Se borraron ${deleted} frames antiguos; quedan ${total - deleted}.`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "error desconocido";
+      alert(`No se pudieron borrar los frames: ${message}`);
+    }
   };
   const [activeTab, setActiveTab] = useState<PanelTab>("letras_y_numeros");
 
@@ -108,6 +140,7 @@ export default function TrainingPanel({
     try {
       const counts = await getAllFrameCounts();
       setFrameCounts(counts);
+      setPhotoCount(Object.values(counts).reduce((total, count) => total + count, 0));
       setCustomWords(getCustomWords());
     } catch (err) {
       console.error("Error al refrescar dataset:", err);
@@ -567,13 +600,13 @@ export default function TrainingPanel({
           <div className="flex items-center gap-1">
             <button
             onClick={handleDeleteUsed}
-            disabled={lastTrained===0}
+            disabled={lastTrained === 0}
             className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-black border border-black/10 shadow-[0_8px_30px_rgba(0,0,0,0.6)] hover:bg-black hover:text-white transition disabled:opacity-40"
           >
             <Trash2 className="w-4 h-4" />
-            <span className="text-sm font-medium">Borrar usadas ({lastTrained})</span>
+            <span className="text-sm font-medium">Borrar antiguos ({lastTrained})</span>
           </button>
-          <span title="Borra solo las fotos ya usadas para entrenar (las que contaste en Entrenar). Deja las nuevas sin entrenar. No borra todo." className="w-5 h-5 rounded-full bg-black text-white flex items-center justify-center cursor-help" aria-label="Qué hace Borrar usadas">
+          <span title="Borra los frames más antiguos hasta el número confirmado por el último entrenamiento. No borra todo el dataset." className="w-5 h-5 rounded-full bg-black text-white flex items-center justify-center cursor-help" aria-label="Qué hace Borrar antiguos">
             <Info className="w-3 h-3" />
           </span>
         </div>

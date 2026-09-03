@@ -128,6 +128,39 @@ export async function deleteItemFrames(itemId: string): Promise<void> {
 }
 
 /**
+ * Borra los frames más antiguos del dataset. El backend puede devolver el
+ * número de frames que consumió en el último entrenamiento; esta función
+ * permite retirar esa cantidad sin vaciar las capturas nuevas.
+ */
+export async function deleteOldestFrames(count: number): Promise<number> {
+  const limit = Math.max(0, Math.floor(count));
+  if (limit === 0) return 0;
+
+  const db = await openDB();
+  const readTx = db.transaction(STORE_NAME, "readonly");
+  const records = await new Promise<StoredFrame[]>((resolve, reject) => {
+    const request = readTx.objectStore(STORE_NAME).getAll();
+    request.onsuccess = () => resolve(request.result as StoredFrame[]);
+    request.onerror = () => reject(request.error);
+  });
+
+  const selected = records
+    .sort((a, b) => a.timestamp - b.timestamp || a.id.localeCompare(b.id))
+    .slice(0, limit);
+  if (selected.length === 0) return 0;
+
+  const deleteTx = db.transaction(STORE_NAME, "readwrite");
+  const store = deleteTx.objectStore(STORE_NAME);
+  for (const frame of selected) store.delete(frame.id);
+
+  await new Promise<void>((resolve, reject) => {
+    deleteTx.oncomplete = () => resolve();
+    deleteTx.onerror = () => reject(deleteTx.error);
+  });
+  return selected.length;
+}
+
+/**
  * Exporta el dataset completo como archivo ZIP estructurado por carpetas:
  * dataset/
  *   letras_y_numeros/

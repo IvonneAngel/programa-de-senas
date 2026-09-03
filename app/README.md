@@ -1,20 +1,29 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Interfaz web del proyecto LSM
 
-# Run and deploy your AI Studio app
+Esta carpeta contiene la interfaz React/Vite del prototipo actual. La aplicación abre la cámara mediante `getUserMedia`, muestra el feed local, captura frames y prepara solicitudes hacia el servicio de predicción. El frontend no contiene por sí mismo el modelo ni un servidor de reconocimiento.
 
-This contains everything you need to run your app locally.
+## Ejecución local
 
-View your app in AI Studio: https://ai.studio/apps/7099766d-e880-4f63-bbb4-2bb2b7657208
+```bash
+pnpm install --ignore-scripts
+pnpm run dev
+```
 
-## Run Locally
+La interfaz queda disponible en el puerto configurado por Vite. Para que aparezcan predicciones, debe existir un backend que atienda `POST /api/prediccion-frame` en `http://127.0.0.1:8765`. El proxy está declarado en `vite.config.ts`; el servidor de ese puerto no forma parte del estado vigente de este repositorio.
 
-**Prerequisites:**  Node.js
+## Autocompletado
 
+`src/components/GhostWord.tsx` carga `public/diccionario_grande.txt` y `public/lsm_label_map.json`. Cuando la interfaz recibe una letra o un prefijo, muestra una sugerencia visual de palabra. Esa sugerencia es autocompletado, no reconocimiento directo, y no debe presentarse como una traducción confirmada.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Captura y entrenamiento
+
+El panel de entrenamiento guarda las imágenes capturadas en IndexedDB y permite exportarlas como ZIP. La acción de entrenamiento solicita `POST /api/entrenar`; si el backend no está conectado, la interfaz muestra el error y conserva la posibilidad de capturar y exportar datos. El borrado de frames antiguos se realiza dentro de IndexedDB y no vacía todo el dataset.
+
+## Verificación
+
+```bash
+pnpm exec tsc --noEmit
+pnpm run build
+```
+
+La aplicación puede compilarse con estas verificaciones. La compilación correcta no demuestra que la predicción esté conectada: esa parte requiere el backend y una prueba de extremo a extremo.
