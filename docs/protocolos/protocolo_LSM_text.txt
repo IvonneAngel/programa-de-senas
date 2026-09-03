@@ -1,0 +1,709 @@
+FERIA MEXICANA DE CIENCIAS E INGENIERÍAS
+
+Reconocimiento del Lenguaje de Señas Mexicano mediante Inteligencia Artificial
+
+NÚMERO DE FIPI : COA-SI-XXXX
+
+Tipo de proyecto: Tecnológico
+
+Nivel educativo: Educación media superior (preparatoria)
+
+Categoría: Sistemas informáticos
+
+Institución: CECyTEC Sol de Oriente
+
+Nombre de los participantes:
+
+[Nombre del participante 1]
+
+[Nombre del participante 2]
+
+[Nombre del participante 3]
+
+Nombre del asesor:
+
+[Nombre del asesor]
+
+RESUMEN
+
+Este proyecto desarrolla un sistema de reconocimiento del Lenguaje de Señas Mexicano (LSM) basado en visión por computadora e inteligencia artificial, capaz de traducir señas a texto en tiempo real usando únicamente la cámara de una computadora estándar. El sistema combina MediaPipe, para extraer 21 puntos clave (keypoints) de la mano por cuadro, con una red neuronal Conv1D + BiLSTM entrenada para clasificar esos puntos como letras del abecedario o palabras del vocabulario LSM. Se construyó un dataset propio de 598,127 imágenes y video para 26 letras del abecedario y 249 palabras en 12 categorías semánticas. El modelo de abecedario alcanzó 99.06% de accuracy en validación, con un tamaño final de 45 KB; el modelo de vocabulario, entrenado sobre un conjunto de datos considerablemente más pequeño por clase, alcanzó 42.4% de accuracy, por debajo de la meta planteada. El hallazgo principal es que, con suficientes datos por clase, el enfoque de keypoints es capaz de un accuracy alto sin requerir hardware costoso; el cuello de botella actual no es la arquitectura del modelo, sino la cantidad de datos etiquetados disponibles para el vocabulario.
+
+1. INTRODUCCIÓN
+
+Comunicarse es de las necesidades humanas más básicas y, sin embargo, para una persona sorda en México hacerlo con alguien que no conoce el Lenguaje de Señas Mexicano (LSM) rara vez es sencillo. La opción más común sigue siendo escribir en un papel o en el celular, o esperar a que aparezca un intérprete, que casi nunca está disponible en el momento en que se necesita.
+
+El LSM tiene su propia gramática y su propio vocabulario. No es una versión gestual del español: es una lengua completa, con una estructura distinta a la del español oral o escrito. El problema es que casi ningún oyente lo conoce, así que cuando una persona sorda llega a una consulta médica, a una tienda o a un salón de clases, lo más probable es que nadie ahí pueda entenderla.
+
+En los últimos años esto empezó a cambiar del lado tecnológico. MediaPipe, la librería de visión por computadora de Google, puede rastrear la posición de los dedos y la palma de una mano usando una cámara normal, sin sensores ni guantes especiales. No fue diseñada pensando en lenguaje de señas (sirve lo mismo para videojuegos que para interfaces de manos libres), pero da exactamente el tipo de dato que hace falta para este problema: la posición de cada articulación de la mano, cuadro a cuadro. TensorFlow se encarga de la otra mitad: aprender a distinguir una seña de otra a partir de esos puntos.
+
+Este proyecto nació de una pregunta simple: ¿se puede entrenar un modelo que reconozca el abecedario del LSM en tiempo real, usando solo una computadora estándar? Construimos un sistema que hace justo eso. Después intentamos llevarlo un paso más allá, entrenando un segundo modelo con un vocabulario de palabras completas del LSM, no solo letras, aunque, como se detalla en la sección de resultados, ese segundo modelo todavía está lejos de ser confiable.
+
+La idea de uso es directa: alguien hace una seña frente a la cámara de su computadora o celular, y el sistema la convierte en texto que la otra persona puede leer en pantalla. Esto no sustituye a un intérprete humano, pero puede ayudar en una conversación breve donde no hay ninguno disponible: en una farmacia, en una ventanilla, en una videollamada de trabajo o de clase.
+
+Nada de esto depende de comprar hardware especial. El 96% de los usuarios de internet en México ya accede desde un smartphone, y ese teléfono ya trae cámara. Por esa misma razón diseñamos el modelo pensando en que pudiera integrarse a las herramientas que la gente ya usa, videollamadas y mensajería, en lugar de competir con ellas ofreciendo una aplicación más que nadie tendría que instalar.
+
+Las redes sociales y las aplicaciones de mensajería ya cambiaron cómo se comunica la gente, y eso incluye a personas sordas y mudas: una videollamada de WhatsApp, por ejemplo, ya es un canal que cualquiera puede usar sin depender de escribir. La población adolescente en particular pasa una parte considerable del día frente al celular, lo que convierte a estas plataformas en el lugar más natural para llevar el reconocimiento de señas, en vez de pedirle a la gente que aprenda una herramienta nueva. Lo mismo aplica del lado empresarial: negocios que necesitan atender clientes sordos por canales digitales se benefician de un reconocimiento de señas que funcione dentro de las aplicaciones que ya usan a diario.
+
+2. ANTECEDENTES
+
+Antes de escribir una sola línea de código, revisamos qué se había hecho ya en reconocimiento de señas con inteligencia artificial. La mayoría de esa investigación está enfocada en lenguajes de señas extranjeros, sobre todo el ASL (americano) y el BSL (británico); para el LSM la información disponible era bastante más limitada.
+
+Dentro de México sí hay trabajo previo que vale la pena mencionar. Investigadores de la UNAM probaron redes convolucionales para reconocer un puñado de letras, pero sin lograr que funcionara en tiempo real. En la UABC y el CICESE, Irvin Hussein López Nava desarrolló Daktilos, una aplicación que reconoce las 30 letras del abecedario LSM usando visión por computadora [9]. El IPN, por su parte, construyó un guante con sensores mioeléctricos que verbaliza señas y con él ganó el James Dyson Award México [17]. Ninguno de los dos proyectos, sin embargo, cubre un vocabulario amplio de palabras completas en tiempo real usando solo una computadora estándar.
+
+En 2024 el CICESE lanzó Sordbo, pensado específicamente para tomar pedidos de cafetería en LSM [19]. Por otro lado, EnSeñas AI, una startup mexicana, está construyendo un traductor bidireccional LSM-español [12]; su obstáculo principal, documentado por ellos mismos, es la falta de datos etiquetados de calidad. Es el mismo problema que enfrentamos nosotros durante buena parte de este proyecto.
+
+A nivel internacional el panorama de accuracy es bueno, pero desigual entre lenguas de señas: las mejores arquitecturas para ASL llegan a 99.97%, para LIBRAS a 93%, para ISL a 89.5%. Para LSM, un estudio de 2025 basado en máquinas de soporte vectorial (SVM) alcanzó 92% [15]. Nuestro modelo de abecedario alcanzó 99.06% y el de vocabulario 42.4%, como se detalla en la sección de resultados y se compara en la Figura 1.
+
+Figura 1. Accuracy reportado en distintos sistemas de reconocimiento de señas.
+
+La diferencia entre estos resultados no está en qué tan sofisticada es la arquitectura. Conv1D+BiLSTM, SVM o una red convolucional simple pueden llegar a un accuracy parecido en condiciones comparables; la diferencia real está en cuántos datos etiquetados existen para cada lengua. El inglés y el portugués cuentan con datasets públicos enormes; para el LSM prácticamente no había ninguno utilizable cuando empezamos este proyecto.
+
+Las herramientas de base también son conocidas: MediaPipe se ha vuelto el estándar de facto para detectar puntos clave de manos en tiempo real, y TensorFlow junto con PyTorch dominan el entrenamiento de redes profundas. De esta revisión sacamos una conclusión clara: no existía un sistema completo para LSM que pudiéramos simplemente adaptar. Terminamos combinando MediaPipe, para detectar la mano, con una red entrenada desde cero para clasificar la seña. Cada pieza tuvo que ajustarse, desde el número de keypoints hasta la forma de normalizar las coordenadas, antes de que funcionara con nuestros propios datos.
+
+3. DEFINICIÓN DEL PROBLEMA, PREGUNTA Y META DEL PROYECTO
+
+La pregunta que guio el proyecto fue directa: ¿puede un sistema de inteligencia artificial reconocer señas del LSM en tiempo real, usando solo la cámara de una computadora estándar, sin depender de escritura ni de un intérprete humano presente?
+
+De ahí se desprendió una meta de ingeniería concreta: construir un prototipo capaz de detectar las 26 letras entrenables del abecedario LSM (todas excepto la Ñ, que quedó fuera del entrenamiento por falta de datos, como se explica en la sección de metodología), con una precisión mínima del 80%, usando la cámara de una computadora estándar y herramientas de código abierto.
+
+El contexto que le da peso a esta pregunta es la situación actual de accesibilidad educativa y laboral en México. Según el INEGI (2020), solo el 21% de las personas sordas en edad escolar asiste a la escuela, y el 47% no llega más allá de cuarto grado de primaria. En el terreno laboral, apenas el 29.9% de la población sorda es económicamente activa, como resume la Figura 2.
+
+Figura 2. Brecha educativa y laboral de las personas sordas en México.
+
+Estos números no hablan de falta de capacidad: hablan de falta de acceso. Y el acceso no se resuelve solo con buenas intenciones, se resuelve con herramientas que la gente pueda usar hoy, sin esperar a que cambie la política pública o a que se forme más intérpretes de los que hay.
+
+No buscábamos la solución definitiva al problema de accesibilidad en México. Sería ingenuo pensar que un prototipo escolar puede resolver algo tan grande. Buscábamos demostrar que, con las herramientas que ya existen en cualquier computadora, se puede construir algo funcional para el LSM.
+
+Hipótesis
+
+Si se extraen keypoints de la mano con MediaPipe en lugar de usar la imagen completa, y se entrena una red Conv1D + BiLSTM sobre esos keypoints con suficientes muestras por clase (del orden de miles), entonces el sistema puede alcanzar un accuracy de al menos 80% en el reconocimiento de señas en tiempo real, sin necesidad de hardware especializado ni de un dataset del tamaño de los que existen para el inglés (ASL) o el portugués (LIBRAS).
+
+Variables
+
+Variable independiente: la cantidad de muestras de entrenamiento disponibles por clase (letra o palabra) y la arquitectura del modelo (Conv1D + BiLSTM).
+
+Variable dependiente: el accuracy de clasificación del modelo sobre el conjunto de prueba, medido en porcentaje de predicciones correctas.
+
+Variables controladas: la resolución de cámara, el modelo de MediaPipe utilizado (HandLandmarker, misma versión para todas las muestras), la proporción de la partición entrenamiento/validación/prueba (70/15/15) y los hiperparámetros de entrenamiento (optimizador, tasa de aprendizaje, tamaño de batch), que se mantuvieron fijos entre el modelo de abecedario y el de vocabulario para poder comparar resultados.
+
+4. JUSTIFICACIÓN
+
+Para dimensionar el problema: el Censo de Población y Vivienda 2020 del INEGI, usando la metodología del Grupo de Washington, registró 2,576,213 personas en México con mucha dificultad para oír, aun usando aparato auditivo, y 1,417,126 personas con dificultad para hablar o comunicarse (algunas personas presentan ambas condiciones) [1, 2].
+
+Figura 3. Personas con discapacidad auditiva y del habla en México.
+
+La distribución geográfica tampoco es uniforme: se concentra con mayor intensidad en los estados más poblados y en las zonas urbanas del centro del país, como muestra la Figura 4.
+
+Figura 4. Distribución estimada de personas con discapacidad para oír, por entidad federativa.
+
+La distribución por edad de esta población importa para pensar el diseño de la solución. Más de la mitad tiene más de 60 años, en su mayoría sordera adquirida con la edad, y un 34% adicional tiene entre 30 y 59 años: personas en edad de trabajar, con trámites, citas médicas y vida cotidiana activa. Los niños representan apenas el 2%. No es un problema de una sola generación: cruza el sistema de salud, el mercado laboral y los servicios públicos todos los días.
+
+¿De dónde viene esta discapacidad? Según la Encuesta Nacional de la Dinámica Demográfica (INEGI-CONAPO, 2014), casi la mitad de los casos de discapacidad auditiva en el país, 49.6%, se debe a la edad avanzada. Otro 28.9% proviene de alguna enfermedad, y solo el 9.3% es de nacimiento [21].
+
+La barrera más concreta que enfrenta esta población en el día a día no es, como se suele pensar, la falta de intérpretes: es que el 70% de las palabras del español no tienen una seña directa en LSM y deben deletrearse letra por letra (IMON, 2024) [13]. Eso vuelve lento cualquier trámite cotidiano: pedir un medicamento, hablar con un maestro, resolver algo en una ventanilla. La ENADIS 2022 documentó que el 33.8% de las personas con discapacidad reportó haber sufrido discriminación, y el 80% de los trabajadores sordos no cuenta con ninguna tecnología de asistencia. En el sector salud, más del 65% tiene dificultad para entender instrucciones médicas sin un intérprete presente [14].
+
+Figura 5. Barreras cotidianas que enfrentan las personas sordas en México.
+
+Detrás de todo esto hay, además, un mercado real. El software de accesibilidad digital a nivel global pasó de un valor estimado de 721.1 millones de dólares en 2023 a una proyección de 1,300.3 millones para 2030, con una tasa de crecimiento anual compuesta del 9.2% [18]. En México ya existe demanda concreta: Dilo con Señas, una aplicación desarrollada por una asociación civil en Monterrey, ayuda a aprender LSM [20]. Pero ninguna de estas herramientas reconoce señas de forma automática: el usuario ve un video y memoriza. Lo que construimos hace lo contrario: la cámara lee la seña y la convierte en texto, sin conexión a internet y sin ninguna suscripción de por medio.
+
+Para entrenar el sistema recopilamos un dataset propio de 598,127 imágenes: 574,064 del abecedario, distribuidas en 21 letras estáticas (de la A a la V, sin la Ñ, más la W y la Y), y 24,063 más repartidas en 249 palabras del vocabulario LSM. Las herramientas para construir esto (MediaPipe, TensorFlow, Python) ya eran gratuitas y de código abierto. Lo que no existía era un modelo entrenado específicamente con señas del LSM, publicado abiertamente y disponible para cualquiera que quisiera usarlo.
+
+5. OBJETIVOS
+
+Objetivo general
+
+Diseñar un sistema de reconocimiento de señas del LSM que traduzca gestos a texto en tiempo real, utilizando inteligencia artificial y herramientas de código abierto.
+
+Objetivos específicos
+
+1. Entrenar un modelo de reconocimiento de señas del LSM utilizando un conjunto de librerías de Python (MediaPipe, TensorFlow y OpenCV) para la extracción de puntos clave y la clasificación de gestos.
+
+2. Diseñar el modelo con una arquitectura que permita su integración en plataformas ya existentes de videollamada, mensajería o educación, priorizando primero las más abiertas a integraciones externas (Google Meet, Microsoft Teams y Zoom) y escalando después hacia plataformas más cerradas como WhatsApp, Instagram e incluso Facebook, sin requerir que el usuario instale software adicional.
+
+3. Evaluar la precisión del sistema con al menos 50 palabras del vocabulario LSM, con una meta de 85% de accuracy.
+
+4. Probar la integración del modelo en plataformas de videollamada y mensajería populares.
+
+5. Publicar el código y los datos de entrenamiento como código abierto, de modo que cualquier desarrollador pueda usarlos, modificarlos o adaptarlos a nuevas señas.
+
+6. Documentar el proceso de construcción del sistema para que otros equipos puedan replicarlo o mejorarlo.
+
+6. METODOLOGÍA
+
+El desarrollo se organizó en cinco etapas: recolección de datos, extracción de keypoints con MediaPipe, generación de features, augmentación de datos y entrenamiento del modelo. La Figura 6 resume el flujo completo; cada etapa se detalla a continuación con el nivel técnico necesario para que el sistema pueda reproducirse.
+
+Figura 6. Pipeline completo del sistema de reconocimiento LSM.
+
+6.0 Materiales y herramientas
+
+Lenguaje y librerías: Python 3, MediaPipe (tasks-vision, modelo HandLandmarker), TensorFlow 2.21.0, OpenCV, NumPy.
+
+Hardware de captura: cámara web estándar (sin sensores ni hardware especializado de profundidad).
+
+Hardware de entrenamiento: computadora con GPU y 20 núcleos de CPU disponibles para el procesamiento paralelo de imágenes.
+
+Formato de salida: modelo exportado a TFLite, compatible con dispositivos de recursos limitados.
+
+Control de versiones y organización del código: repositorio con scripts numerados por etapa del pipeline (config.py, a_mediapipe.py, b_keypoints.py, y así sucesivamente).
+
+6.1 Recolección de datos
+
+Para el abecedario se fotografiaron 574,064 imágenes en 21 letras estáticas (de la A a la V, sin la Ñ, más la W y la Y), con un promedio de 27,358 fotos por letra; el rango va de 26,358 a 29,362 según la letra. Cinco letras dinámicas (J, K, Q, X, Z) se capturaron en video en lugar de fotografía fija, porque su forma cambia con el movimiento y una sola imagen no las representa bien: 200 videos por cada una de estas cinco letras. La Ñ se intentó capturar de la misma manera, pero no se obtuvo ninguna toma utilizable; en la práctica, el modelo de abecedario reconoce 26 clases, no 27. La Tabla 1 desglosa el tipo de captura y el número de muestras por letra.
+
+Letra
+
+Tipo de captura
+
+Muestras aprox.
+
+A
+
+Estática (foto)
+
+~27,358
+
+B
+
+Estática (foto)
+
+~27,358
+
+C
+
+Estática (foto)
+
+~27,358
+
+D
+
+Estática (foto)
+
+~27,358
+
+E
+
+Estática (foto)
+
+~27,358
+
+F
+
+Estática (foto)
+
+~27,358
+
+G
+
+Estática (foto)
+
+~27,358
+
+H
+
+Estática (foto)
+
+~27,358
+
+I
+
+Estática (foto)
+
+~27,358
+
+L
+
+Estática (foto)
+
+~27,358
+
+M
+
+Estática (foto)
+
+~27,358
+
+N
+
+Estática (foto)
+
+~27,358
+
+O
+
+Estática (foto)
+
+~27,358
+
+P
+
+Estática (foto)
+
+~27,358
+
+R
+
+Estática (foto)
+
+~27,358
+
+S
+
+Estática (foto)
+
+~27,358
+
+T
+
+Estática (foto)
+
+~27,358
+
+U
+
+Estática (foto)
+
+~27,358
+
+V
+
+Estática (foto)
+
+~27,358
+
+W
+
+Estática (foto)
+
+~27,358
+
+Y
+
+Estática (foto)
+
+~27,358
+
+J
+
+Dinámica (video)
+
+200
+
+K
+
+Dinámica (video)
+
+200
+
+Q
+
+Dinámica (video)
+
+200
+
+X
+
+Dinámica (video)
+
+200
+
+Z
+
+Dinámica (video)
+
+200
+
+Ñ
+
+Sin datos utilizables — excluida del entrenamiento
+
+0
+
+Tabla 1. Las 27 letras del abecedario LSM, tipo de captura y disponibilidad de datos.
+
+Para el vocabulario se trabajó con 249 palabras organizadas en 12 categorías semánticas (acciones, personas, tiempo, lugares, casa y escuela, alimentos, transporte, familiares, cuerpo, ropa y saludos, entre otras), que en conjunto suman 303 clases registradas al contar variantes de una misma palabra. En total se recopilaron 4,811 secuencias de video. Antes de entrenar, se calculó el hash MD5 de cada secuencia para detectar duplicados exactos; se encontraron y eliminaron 35. La Figura 7 muestra cómo se reparten esas clases entre categorías; conviene adelantar que no todas tienen el mismo desempeño, como se ve en la sección de resultados.
+
+Figura 7. Vocabulario LSM por categoría semántica.
+
+6.2 De la fotografía a los números: cómo "ve" el sistema una seña
+
+Antes de describir MediaPipe y la red neuronal es necesario precisar un punto básico: una computadora no procesa una fotografía de la misma forma que una persona. Para una computadora, una imagen en escala de grises es una matriz de números entre 0 (negro) y 255 (blanco); una imagen a color son en realidad tres matrices superpuestas, una por canal (rojo, verde y azul). Una fotografía común de 640×480 píxeles equivale, solo en un canal, a una matriz de 640 por 480 números: 307,200 valores por canal, casi un millón entre los tres. La Figura 8 muestra esta idea a escala reducida: una imagen se representa como matriz de índices de color, con varios ejemplos adicionales de cómo cualquier dibujo simple (una ballena, una casa, un árbol) es, para la computadora, solo una tabla de números.
+
+Figura 8. Una imagen es una matriz de números.
+
+Una imagen a color no es una sola matriz, sino tres superpuestas, una por canal de color, como se explica en la Figura 8b.
+
+Figura 8b. Los tres canales de color: R, G, B.
+
+El mismo principio aplica a cualquier imagen, no solo a fotografías de manos: la Figura 8c muestra varios ejemplos simples.
+
+Figura 8c. Cualquier dibujo simple es, para la computadora, una matriz de números.
+
+Entrenar una red directamente sobre esos casi un millón de números por fotografía es posible, pero caro: hace falta mucho más cómputo y muchos más datos para que el modelo aprenda a ignorar todo lo que no es la mano: el fondo, la ropa, la iluminación, y se quede solo con la seña. Aquí es donde entra MediaPipe.
+
+6.3 MediaPipe: de la matriz de píxeles a 21 puntos por mano
+
+MediaPipe es una librería de visión por computadora desarrollada por Google. Su modelo HandLandmarker no fue entrenado por nosotros: es un modelo ya entrenado por Google con millones de imágenes de manos, y su única función es encontrar una mano dentro de la imagen y devolver 21 puntos clave (keypoints) con sus coordenadas (x, y, z): 21 puntos por mano, con nombres e índices estandarizados (WRIST, THUMB_TIP, INDEX_TIP, entre otros). Cada imagen o cuadro de video se procesó con este modelo, en su versión tasks-vision, que detecta hasta dos manos simultáneamente.
+
+El proceso completo para una sola predicción va desde que la cámara captura la imagen hasta que el sistema tiene un vector de números listo para clasificar.
+
+Esto es la decisión de diseño más importante de todo el proyecto: en lugar de darle a nuestra red la fotografía completa (casi un millón de números, la mayoría de ellos ruido irrelevante), le damos solamente 21 puntos por mano, 63 números en total (21 × 3 coordenadas). MediaPipe ya hizo el trabajo pesado de encontrar la mano entre todo lo demás; nuestra red solo tiene que aprender a distinguir una seña de otra a partir de esos 63 números, no a encontrar la mano dentro de la imagen. Esa reducción es la razón directa por la que nuestro modelo final pesa apenas 45 KB en lugar de los varios megabytes que pesaría una red convolucional entrenada sobre imágenes completas: el propio modelo de MediaPipe, ya entrenado por Google, pesa 7.8 MB en su versión float16, y es él quien carga con la parte más pesada del problema de visión.
+
+Las fotografías del abecedario se procesaron en modo IMAGE; las secuencias de palabras y las letras dinámicas, en modo VIDEO, ya que ese modo aprovecha la continuidad entre cuadros para un rastreo más estable. En una primera versión del pipeline se usó por error el modo VIDEO también para las fotografías, lo que producía detecciones inconsistentes entre imágenes que no tenían relación temporal entre sí; corregir esa confusión de modos fue uno de los primeros ajustes necesarios.
+
+La configuración final fue: num_hands = 2, min_hand_detection_confidence = 0.3, min_tracking_confidence = 0.5. Para el abecedario se usó una sola mano (63 keypoints); para palabras se usaron ambas manos más pose corporal y rasgos faciales, sumando 226 keypoints por cuadro: 126 de manos, 52 de pose y 48 de cara, como desglosa la Figura 9.
+
+Figura 9. Composición de los 226 keypoints del modelo de vocabulario.
+
+6.4 Normalización y generación de features
+
+Cada muestra de entrada al modelo no es un solo cuadro, sino una secuencia de 30 cuadros consecutivos, aproximadamente un segundo de video a 30 cuadros por segundo, lo que le permite a la red observar el movimiento, no solo una postura estática. El valor de 30 se eligió por dos razones prácticas: es suficiente para capturar el gesto completo de las letras dinámicas más lentas observadas durante la recolección, y mantiene el tensor de entrada en un tamaño manejable para entrenar en la máquina disponible; secuencias más largas (60 u 80 cuadros) se probaron informalmente y no mejoraron el accuracy lo suficiente para justificar el costo de cómputo adicional.
+
+La función que normaliza cada mano, de forma simplificada, es la siguiente:
+
+def normalizar_mano(keypoints):    muneca = keypoints[0]    nudillo_medio = keypoints[9]    escala = distancia(muneca, nudillo_medio)    centrados = keypoints - muneca    normalizados = centrados / escala    return normalizados
+
+Los keypoints se normalizaron por bloque anatómico para que el sistema fuera invariante a la posición, escala y rotación de la mano frente a la cámara. Las manos se centraron en la muñeca y se escalaron por la distancia entre la muñeca y el nudillo medio; la pose se centró en los hombros y se escaló por la distancia entre ellos; la cara se centró en la nariz y se escaló por la distancia entre los ojos.
+
+Para el abecedario, esto produjo 93 features por cuadro a partir de los 63 keypoints originales: 72 features invariantes a rotación, traslación y escala (coordenadas XY normalizadas, extensión de cada dedo, ángulos entre falanges y distancias entre puntas de dedos) más 21 valores de profundidad (Z), suavizados con una media móvil de tres cuadros para capturar la profundidad relativa sin depender de qué tan lejos esté la mano de la cámara. Una de estas features, el ángulo entre falanges, se calcula tomando tres keypoints consecutivos de un mismo dedo y aplicando la fórmula del coseno entre los dos vectores que forman.
+
+6.5 Augmentación de datos
+
+La augmentación se aplicó en tres niveles, todos respetando los límites articulares reales de una mano para no generar posturas anatómicamente imposibles. A nivel de frame individual se aplicaron 10 transformaciones espaciales: traslación (±12%), rotación 3D, escalado (0.85–1.15x), flip horizontal, dropout anatómico de hasta dos dedos, variación de curvatura, inclinación de muñeca, temblor, distorsión de perspectiva y simulación de persona específica. A nivel de secuencia completa se aplicaron 6 transformaciones temporales: cambio de velocidad, jitter temporal, frame dropout, recorte temporal, ruido de velocidad y ruido articular. Entre muestras de una misma clase se aplicó mixup, combinando dos secuencias con un factor de mezcla aleatorio.
+
+El efecto de estas transformaciones es acumulativo: una misma muestra original puede generar decenas de variantes distintas combinando traslación, rotación y escalado, como se ilustra en la Figura 10.
+
+Figura 10. Efecto de distintas transformaciones espaciales sobre una misma muestra.
+
+La estrategia de augmentación fue asimétrica: las clases con pocas muestras reciben más variaciones que las clases abundantes. Una clase con 8 muestras o menos recibe 20 variaciones por muestra; una clase con más de 5,000 muestras recibe solo 4. Esto evita que el entrenamiento quede dominado por las clases más fáciles de fotografiar, sin inflar artificialmente el tamaño total del dataset. La augmentación se aplicó únicamente al conjunto de entrenamiento, nunca a validación ni a prueba, para evitar fuga de datos.
+
+6.6 Fundamento de la red neuronal
+
+Una red neuronal es una función matemática construida a partir de capas de funciones simples encadenadas, cada una con parámetros ajustables llamados pesos. Al inicio del entrenamiento estos pesos se inicializan de forma aleatoria, por lo que el modelo produce predicciones incorrectas. En cada iteración, el sistema compara su predicción con la etiqueta real mediante una función de pérdida (loss), y un algoritmo de optimización (en este caso, Adam) ajusta los pesos en la dirección que reduce dicho error. Tras un número suficiente de iteraciones sobre el conjunto de entrenamiento, la red converge hacia parámetros capaces de reconocer patrones consistentes en los datos, en este caso la forma y el movimiento de la mano durante una seña.
+
+La Figura 11 representa esta estructura de forma esquemática: cada punto corresponde a una neurona, cada línea a una conexión con un peso asociado, y la información se propaga desde la entrada (los 93 valores que describen una mano en un cuadro) hasta la salida (la probabilidad asignada a cada una de las 26 letras).
+
+Figura 11a. Estructura de una neurona artificial.
+
+Apiladas en secuencia, muchas neuronas forman capas, y muchas capas forman la red completa. Cada capa transforma la representación de los datos, como se ve en la Figura 11b.
+
+Figura 11b. Capas que transforman información.
+
+La primera operación especializada de nuestra red es una convolución 1D, que detecta patrones locales de movimiento entre cuadros cercanos (Figura 2c).
+
+Figura 11c. Convolución 1D (Conv1D).
+
+Después de las capas convolucionales, una BiLSTM integra el contexto temporal completo de la secuencia, leyendo hacia adelante y hacia atrás (Figura 2d).
+
+Figura 11d. BiLSTM: memoria en dos direcciones.
+
+Finalmente, una capa densa con activación softmax convierte toda esa información en una probabilidad para cada una de las 26 letras (Figura 2e).
+
+Figura 11e. Capa densa + Softmax: la decisión.
+
+La Figura 2f resume el flujo completo, de principio a fin, para el modelo de abecedario.
+
+Figura 11f. Resumen del modelo: Conv1D + BiLSTM.
+
+Otra forma de ilustrar lo que ocurre dentro de la red es observar cómo reorganiza el espacio de entrada: al pasar por las capas, las 93 features originales de cada cuadro se transforman en una representación interna donde las señas de clases distintas quedan más separadas entre sí. La Figura 12 ofrece una representación conceptual de ese espacio.
+
+Figura 12. Representación conceptual del espacio de activaciones internas de la red.
+
+6.7 Arquitectura del modelo
+
+Se utilizó una arquitectura Conv1D + BiLSTM para procesar las secuencias de keypoints. La entrada es un tensor de forma (30, 93) para el abecedario o (30, 226) para palabras, donde 30 es el número de cuadros por secuencia. La Figura 13 muestra la arquitectura completa con la forma del tensor en cada capa.
+
+Figura 13. Arquitectura Conv1D + BiLSTM con shape del tensor por capa.
+
+La red combina LayerNormalization sobre la entrada, dos capas Conv1D (64 y 96 filtros, kernel 3, activación ReLU) con BatchNormalization y MaxPooling1D después de cada una, SpatialDropout1D(0.2) para regularización, una capa Bidirectional LSTM de 64 unidades que integra el orden temporal completo de la secuencia, Dropout(0.3), y dos capas densas finales (64 neuronas y la capa de salida con softmax). La razón de combinar Conv1D con BiLSTM es que cada componente cubre algo distinto: Conv1D detecta patrones locales de movimiento entre cuadros vecinos, por ejemplo la curvatura de un dedo en transición, mientras que la BiLSTM sigue la dinámica de la secuencia completa, lo que permite distinguir señas que dependen del orden temporal, como el gesto de abrir y cerrar la mano.
+
+6.8 Entrenamiento
+
+El entrenamiento usó el optimizador Adam con tasa de aprendizaje inicial de 1e-3, y FocalLoss (γ=3.0, α=0.25) como función de pérdida, elegida específicamente para manejar el desbalance entre clases con muchas y pocas muestras: a diferencia de la Cross-Entropy estándar, penaliza menos los ejemplos que el modelo ya clasifica bien y concentra el gradiente en los ejemplos difíciles, como se ilustra en la Figura 14.
+
+Figura 14. Focal Loss frente a Cross-Entropy estándar.
+
+Se aplicó EarlyStopping con paciencia de 10 épocas sobre la pérdida de validación, restaurando los mejores pesos encontrados, junto con ReduceLROnPlateau (factor 0.5, paciencia 5, tasa mínima 1e-6). El batch size fue de 256, con un máximo de 150 épocas. Los datos se dividieron en 70% entrenamiento, 15% validación y 15% prueba antes de aplicar cualquier augmentación, como muestra la Figura 15. Esta proporción es la convención estándar en proyectos de tamaño similar: suficientes datos de entrenamiento para que el modelo generalice, con validación y prueba lo bastante grandes para que las métricas no varíen mucho de una corrida a otra.
+
+Figura 15. División del dataset en entrenamiento, validación y prueba.
+
+Hiperparámetro
+
+Valor
+
+Optimizador
+
+Adam
+
+Tasa de aprendizaje inicial
+
+1e-3
+
+Función de pérdida
+
+Focal Loss (γ=3.0, α=0.25)
+
+Batch size
+
+256
+
+Épocas máximas
+
+150 (EarlyStopping, paciencia 10)
+
+ReduceLROnPlateau
+
+factor 0.5, paciencia 5, mínimo 1e-6
+
+División de datos
+
+70% entrenamiento / 15% validación / 15% prueba
+
+Longitud de secuencia
+
+30 cuadros por muestra
+
+Tabla 2. Hiperparámetros de entrenamiento utilizados para ambos modelos.
+
+El procesamiento de imágenes para extraer keypoints se paralelizó con 15 procesos de trabajo, de los 20 núcleos disponibles en la máquina de entrenamiento (los 5 restantes se reservaron para el sistema operativo) y para TensorFlow 2.21.0, que se ejecutó con aceleración por GPU y memory growth activado para evitar que reservara toda la memoria del acelerador de una sola vez.
+
+6.9 Evaluación y exportación
+
+Se midieron accuracy global, precisión, exhaustividad (recall) y F1-score por clase, además de una matriz de confusión para identificar qué señas se confunden entre sí con mayor frecuencia. El modelo final se convirtió de formato Keras (.h5) a TFLite mediante cuantización, un proceso que reduce la precisión numérica de los pesos para disminuir drásticamente el tamaño del archivo con una pérdida de accuracy mínima: el modelo del abecedario pasó de 3.8 MB a 45 KB, un factor de aproximadamente 84 veces, como ilustra la Figura 16.
+
+Figura 16. Exportación y cuantización del modelo a formato TFLite.
+
+6.10 Alternativas de diseño consideradas y descartadas
+
+Antes de fijar la arquitectura Conv1D + BiLSTM se evaluaron otras dos rutas. La primera fue una red convolucional 2D entrenada directamente sobre las imágenes completas, sin pasar por MediaPipe; se descartó porque requería órdenes de magnitud más datos y cómputo para alcanzar un accuracy comparable, y el modelo resultante habría pesado varios megabytes en lugar de kilobytes. La segunda fue un clasificador SVM sobre los keypoints, similar al reportado en [15]; se descartó porque, aunque más simple de entrenar, no captura bien la dinámica temporal necesaria para las letras dinámicas y las palabras, donde el orden de los movimientos importa tanto como su forma.
+
+Enfoque
+
+Ventaja
+
+Motivo de la decisión
+
+CNN 2D sobre imagen completa
+
+No requiere MediaPipe; puede aprender features propias
+
+Necesita muchos más datos y cómputo; modelo final de varios MB en vez de KB
+
+SVM sobre keypoints
+
+Simple de entrenar, pocos hiperparámetros
+
+No modela bien la dinámica temporal de letras dinámicas y palabras
+
+Conv1D + BiLSTM (elegida)
+
+Combina patrones locales de movimiento con dinámica temporal completa
+
+Más compleja de ajustar que un SVM
+
+Tabla 3. Comparación de los enfoques considerados para la clasificación de señas.
+
+6.11 Estructura del proyecto
+
+El repositorio se organiza en scripts numerados por etapa del pipeline (config.py, a_mediapipe.py, b_keypoints.py, y así sucesivamente), más las carpetas de datasets y modelos exportados, como muestra la Figura 17.
+
+Figura 17. Estructura simplificada del repositorio del proyecto.
+
+6.12 Cronología de desarrollo
+
+El proyecto se trabajó de forma continua desde el 26 de abril de 2026: las primeras semanas se dedicaron a la recolección de fotografías del abecedario, seguidas de la extracción de keypoints y el diseño de features, y desde junio a los ciclos de entrenamiento, depuración de errores y ajuste de hiperparámetros descritos en las secciones anteriores. El trabajo sigue de forma continua más allá de la fecha de corte de este documento. La Figura 18 resume cómo se distribuyó el esfuerzo entre las distintas etapas del pipeline a lo largo de las semanas.
+
+Figura 18. Distribución del esfuerzo por etapa del proyecto a lo largo del tiempo.
+
+7. RESULTADOS
+
+7.1 Modelo de abecedario
+
+El modelo de abecedario se entrenó con datos de 26 letras y alcanzó un accuracy de validación de 99.06%, estabilizándose alrededor de la época 15 de un total de 20 antes de que EarlyStopping detuviera el entrenamiento. El modelo final pesa 45 KB y predice en menos de 50 ms por cuadro, lo que lo hace viable para uso en tiempo real incluso en equipos modestos.
+
+Figura 19. Curva de entrenamiento (accuracy y pérdida) — modelo de abecedario.
+
+Sobre el conjunto de prueba, de 9,255 muestras el modelo clasificó correctamente 9,058 (97.9% ± 0.3 puntos porcentuales, con 95% de confianza). Los 197 errores restantes se concentraron en pares de letras con formas de mano parecidas, sobre todo entre las letras dinámicas J y K, cuyo movimiento es similar en la fase inicial del gesto, como se observa en la Figura 20.
+
+Figura 20. Matriz de confusión — modelo de abecedario.
+
+Estos resultados confirman que, para señas estáticas, o con una dinámica corta y bien definida como las letras dinámicas del LSM, la combinación de MediaPipe con una red Conv1D relativamente ligera es suficiente para un sistema preciso y rápido.
+
+7.2 Modelo de vocabulario
+
+El segundo modelo, entrenado sobre 281 clases de palabras, tuvo un resultado muy distinto: 42.4% de accuracy en validación (± 3.7 puntos porcentuales, con 95% de confianza, dado que el conjunto de prueba de este modelo es considerablemente más pequeño: 671 muestras), muy por debajo de la meta de 85% planteada en los objetivos de este proyecto. Este resultado se reporta sin atenuantes, ya que forma parte de las conclusiones técnicas del proyecto, como se aprecia en la Figura 21.
+
+Figura 21. Accuracy final: modelo de abecedario vs. modelo de vocabulario.
+
+La causa más probable no es la arquitectura. Es la misma Conv1D+BiLSTM que funcionó bien para el abecedario; el problema está en la cantidad de datos disponibles por clase. El conjunto de palabras se dividió en 3,371 secuencias de entrenamiento, 769 de validación y 671 de prueba, repartidas entre 281 clases: un promedio de apenas 17 muestras por clase, frente a las 27,358 fotos por letra del abecedario. A eso se suman los 35 duplicados exactos detectados en el dataset, que reducían aún más la diversidad real de ejemplos disponibles. Entrenar 281 categorías distintas con esa cantidad de datos es, en la práctica, un problema de escasez de datos más que un problema de diseño de modelo.
+
+Esto no invalida el enfoque general del proyecto: confirma que el cuello de botella para el LSM, igual que para EnSeñas AI y buena parte de los proyectos revisados en los antecedentes, sigue siendo la disponibilidad de datos etiquetados, no la arquitectura del modelo. El abecedario funcionó bien porque tuvimos suficientes datos; el vocabulario, todavía no.
+
+8. CONCLUSIONES
+
+Aportación específica de este proyecto
+
+A diferencia de Daktilos (reconocimiento de abecedario sin vocabulario de palabras) y del guante mioeléctrico del IPN (requiere hardware adicional), este proyecto aporta un sistema que reconoce tanto letras como un vocabulario inicial de palabras completas, usando exclusivamente una cámara estándar y sin sensores. La contribución concreta y verificable es el resultado del abecedario: 99.06% de accuracy con un modelo de 45 KB, entrenado con un dataset propio de 574,064 imágenes que se documenta y podría reutilizarse en trabajos futuros sobre LSM.
+
+Este proyecto demuestra que es posible construir, con herramientas de código abierto y una computadora estándar, un sistema de reconocimiento del abecedario LSM que funciona en tiempo real y con una precisión alta: 99.06% en validación, con un modelo de apenas 45 KB. La combinación de tres decisiones técnicas explica gran parte de ese resultado: usar keypoints de MediaPipe en lugar de imágenes crudas, lo que hace al sistema invariante a la iluminación y al fondo; una augmentación que respeta la anatomía real de la mano, y una arquitectura Conv1D relativamente ligera que no depende de GPUs costosas para entrenarse ni para ejecutarse.
+
+El modelo de vocabulario, en cambio, no alcanzó la meta planteada. Con 42.4% de accuracy sobre 281 clases y un promedio de apenas 17 muestras por clase, queda claro que el vocabulario del LSM necesita mucho más dato etiquetado del que logramos reunir en el tiempo de este proyecto. Esto coincide con lo que reportan otros equipos, como EnSeñas AI: el obstáculo real no es la arquitectura del modelo, es la escasez de datos.
+
+Durante el desarrollo se identificaron varios problemas concretos que se documentan a continuación, ya que cualquier equipo que intente replicar este trabajo probablemente los encuentre también: la letra Ñ terminó sin ninguna fotografía utilizable y tuvo que excluirse del entrenamiento; el dataset de palabras tenía 35 duplicados exactos que se detectaron por hash MD5; el delegate de GPU para TFLite no estaba disponible en el entorno de despliegue y hubo que caer de vuelta a CPU; y una confusión inicial entre los modos IMAGE y VIDEO de MediaPipe generó detecciones inconsistentes hasta que se corrigió.
+
+Los retos pendientes son claros: ampliar el dataset de vocabulario, sobre todo en las categorías con menos ejemplos, resolver el caso de la Ñ, y reducir los falsos positivos entre pares de letras dinámicas que se confunden con facilidad. Estas últimas ilustran bien el problema de fondo: 200 videos por letra dinámica son muy pocos comparados con los más de 27,000 ejemplos por letra estática, y esa diferencia se nota directamente en los resultados. Una vía concreta para resolverlo es abrir la recolección de datos a la colaboración: invitar a más personas a grabarse haciendo señas específicas, empezando por las letras dinámicas y las categorías de vocabulario más débiles, permitiría ampliar el dataset a un ritmo que un equipo pequeño no puede lograr solo. A futuro, y solo una vez que el modelo de vocabulario alcance una precisión confiable, este prototipo podría integrarse en aplicaciones de videollamada o dispositivos móviles para facilitar la comunicación entre personas sordas y oyentes en México. Por ahora, el resultado más sólido que puede afirmarse es más modesto y, creemos, igual de valioso: con 500 fotos por letra y augmentación controlada, sí se puede alcanzar más de 99% de accuracy en un problema de reconocimiento de señas, sin infraestructura de cómputo costosa.
+
+Alcances y limitaciones
+
+Alcance: el sistema reconoce 26 letras del abecedario LSM en tiempo real con alta precisión (99.06%), usando solo una cámara estándar.
+
+Alcance: se documenta y publica un dataset propio de imágenes y video del LSM, reutilizable por otros equipos.
+
+Limitación: el modelo de vocabulario (42.4% de accuracy) no es apto para uso real todavía; se reporta como trabajo en progreso, no como resultado final.
+
+Limitación: el sistema no ha sido probado con usuarios sordos reales fuera del equipo de desarrollo; no hay todavía una evaluación de usabilidad con la población objetivo.
+
+Limitación: la letra Ñ no está cubierta por el modelo actual.
+
+Limitación: las pruebas se realizaron en condiciones de laboratorio controladas (iluminación e instalación fijas); el desempeño en condiciones variables de uso real (poca luz, cámaras de baja calidad) no se ha evaluado todavía.
+
+Próximos pasos
+
+Corto plazo: ampliar la recolección de video para las letras dinámicas (J, K, Q, X, Z) y resolver el caso de la Ñ.
+
+Corto plazo: abrir una convocatoria de grabación colaborativa para las categorías de vocabulario con menos ejemplos.
+
+Mediano plazo: evaluar el modelo de vocabulario con usuarios sordos reales y medir su experiencia de uso, no solo el accuracy en el conjunto de prueba.
+
+Mediano plazo: probar el sistema en condiciones variables de iluminación y calidad de cámara, fuera del entorno controlado de recolección.
+
+Largo plazo: iniciar la integración con Google Meet, Microsoft Teams y Zoom, antes de escalar hacia WhatsApp, Instagram y Facebook.
+
+9. GLOSARIO TÉCNICO
+
+Los siguientes términos técnicos se usan a lo largo de este documento; se listan aquí en orden temático para facilitar la lectura a quienes no estén familiarizados con aprendizaje automático.
+
+Término
+
+Definición
+
+Keypoint
+
+Punto clave con coordenadas (x, y, z) que representa una articulación o referencia anatómica detectada por MediaPipe.
+
+Conv1D
+
+Capa convolucional que opera sobre una dimensión (el tiempo), detectando patrones locales entre cuadros cercanos de una secuencia.
+
+BiLSTM
+
+Red recurrente (LSTM) que procesa una secuencia en ambas direcciones, integrando el contexto temporal completo antes y después de cada punto.
+
+Softmax
+
+Función que convierte las salidas de la red en probabilidades que suman 1, una por cada clase posible.
+
+Accuracy
+
+Porcentaje de predicciones correctas sobre el total de muestras evaluadas.
+
+Overfitting
+
+Cuando un modelo memoriza el conjunto de entrenamiento en vez de aprender patrones generales, y su desempeño cae en datos nuevos.
+
+Augmentación de datos
+
+Generación de variantes artificiales de una muestra (rotación, escalado, ruido) para ampliar el dataset de entrenamiento.
+
+TFLite
+
+Formato de TensorFlow optimizado para ejecutar modelos en dispositivos con recursos limitados (móviles, embebidos).
+
+Cuantización
+
+Técnica que reduce la precisión numérica de los pesos de un modelo para disminuir su tamaño en disco y memoria.
+
+Focal Loss
+
+Función de pérdida que reduce el peso de los ejemplos fáciles y concentra el aprendizaje en los ejemplos difíciles o poco frecuentes.
+
+Época (epoch)
+
+Una pasada completa del algoritmo de entrenamiento sobre todo el conjunto de datos de entrenamiento.
+
+Matriz de confusión
+
+Tabla que cruza las clases reales contra las clases predichas, mostrando en qué se equivoca el modelo con más frecuencia.
+
+10. REFERENCIAS
+
+[1] Instituto Nacional de Estadística y Geografía (INEGI). (2020). Censo de Población y Vivienda 2020. Discapacidad. https://www.inegi.org.mx/temas/discapacidad/
+
+[2] Instituto Nacional de Estadística y Geografía (INEGI). (2021). Prevalencia de la población con discapacidad y/o problema o condición mental. Comunicado de prensa 713/21. https://www.inegi.org.mx/contenidos/saladeprensa/aproposito/2021/EAP_PersDiscap21.pdf
+
+[3] Lugares, C. et al. (2024). Sign language images dataset from Mexican sign language. Data in Brief, 54. https://doi.org/10.1016/j.dib.2024.110533
+
+[4] Google AI. (2024). MediaPipe Hand Landmarker. https://google.github.io/mediapipe/solutions/hands.html
+
+[5] Abecerril, A. et al. (2024). MSL-150 Dataset: Mexican Sign Language with Keypoints. GitHub. https://github.com/armandobecerril/MSL-150-Dataset
+
+[6] Zhang, X. et al. (2020). HandAugment: A Simple Data Augmentation Method for 3D Hand Pose Estimation. arXiv:2003.10544.
+
+[7] Chollet, F. (2021). Deep Learning with Python (2nd ed.). Manning Publications.
+
+[8] UNESCO. (2023). Global Education Monitoring Report: Technology in Education. https://www.unesco.org/gem-report
+
+[9] López Nava, I.H. et al. (2024). Daktilos: Plataforma de aprendizaje de LSM con visión por computadora. CICESE, Ensenada.
+
+[10] Martínez, R. et al. (2024). Reconocimiento de la Lengua de Señas Mexicana usando Deep Learning. Ciencia Latina, 8(4), 14458.
+
+[11] RIDE Revista. (2025). Aplicación Móvil Basada en Deep Learning para la Inclusión Educativa de Personas Sordas. RIDE, 15(29).
+
+[12] EnSeñas AI. (2026). The Neural Translation Engine. https://ensenas.ai/
+
+[13] IMON. (2024). Desafíos de las personas sordas. Excélsior. https://www.excelsior.com.mx/nacional/inclusion-personas-sordas/1676008
+
+[14] INEGI. (2022). Encuesta Nacional sobre Discriminación (ENADIS) 2022. https://www.inegi.org.mx/programas/enadis/2022/
+
+[15] Caballero Hernández, X. (2025). Desarrollo de Software dedicado a la traducción de la Lengua Mexicana de Señas mediante Deep Learning y Machine Learning. PAAKAT: Revista de Tecnología y Sociedad. https://paakat.cugdl.udg.mx/index.php/paakat/article/view/897
+
+[16] Lugares, I., et al. (2025). Mexican Sign Language Recognition Dataset. MDPI Electronics, 14(7), 1423. https://www.mdpi.com/2079-9292/14/7/1423
+
+[17] ADN40. (2024). Guante traductor de Lengua de Señas Mexicana del IPN gana premio James Dyson Award México. https://www.adn40.mx/ciencia/2024-10-31/ipn-guante-traductor-lengua-senas-mexicana-gana-premio-internacional/
+
+[18] Grand View Research. (2024). Digital Accessibility Software Market Size & Share Report, 2024–2030. https://www.grandviewresearch.com/industry-analysis/digital-accessibility-software-market-report
+
+[19] La Jornada. (2024, diciembre 3). Daktilos y Sordbo, herramientas del CICESE para la comunidad sorda. https://www.jornada.com.mx/2024/12/03/ciencias/a06n1cie
+
+[20] Dilo con Señas. (2024). Aplicación para aprender Lengua de Señas Mexicana. Asociación Civil, Monterrey. https://nacersordo.com/en/apps/
+
+[21] Instituto Nacional de Estadística y Geografía (INEGI) y Consejo Nacional de Población (CONAPO). (2014). Encuesta Nacional de la Dinámica Demográfica (ENADID) 2014.
+
+11. PENDIENTES ANTES DE LA VERSIÓN FINAL
+
+Esta sección concentra los elementos que todavía requieren información o material del equipo antes de que el documento esté listo para entrega. Se listan aquí, en un solo lugar, para facilitar el seguimiento.
+
+Fotografías y capturas por agregar
+
+Fotografía real de una seña del abecedario LSM tomada del dataset (sección 6.1, ejemplo de letra estática).
+
+Fotografía real de una mano del dataset con los 21 keypoints de MediaPipe superpuestos, captura de pantalla del pipeline en ejecución (sección 6.3).
+
+Ejemplos reales, capturas del pipeline, de una misma muestra antes y después de aplicar augmentación (sección 6.5).
+
+Datos por confirmar
+
+Número de FIPI, nombres reales de los participantes y del asesor (portada) — actualmente son texto de marcador de posición.
+
+Confirmar si la letra Ñ tiene 200 videos grabados (como se indicó en una conversación posterior) o 0 fotografías utilizables (como se indicó originalmente); el documento actual la trata como excluida por falta de datos.
+
+Verificar en femeci.mx el nombre oficial vigente de la categoría del proyecto (el documento usa "Sistemas informáticos").
+
+Tiempo real de entrenamiento y modelo específico de GPU utilizado, para la sección de reproducibilidad.
+
+Lista específica de las 3–4 letras del abecedario que aún necesitan más datos de entrenamiento, mencionada de forma general en las conclusiones.
+
+Documentación de cumplimiento
+
+Constancia de consentimiento informado de las personas fotografiadas o grabadas para el dataset, si el proyecto la requiere para la fase de evaluación de cumplimiento de FEMECI.
+
+Confirmar si la convocatoria de este año pide una sección de presupuesto ("Presupuesto") no incluida actualmente.

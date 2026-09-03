@@ -1,0 +1,1 @@
+Copiar aquí build_*.py y download_*.py de codigo/entrenamiento/pta-lsm-scripts/ para bajar datasets

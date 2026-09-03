@@ -1,0 +1,1028 @@
+{
+  "source": "training_metrics",
+  "minimum_f1_for_translation": 0.2,
+  "labels": {
+    "abril": {
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1_score": 0.6666666666666666,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "abuela": {
+      "precision": 0.3333333333333333,
+      "recall": 0.5,
+      "f1_score": 0.4,
+      "support": 2.0,
+      "status": "usable"
+    },
+    "abuelo": {
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1_score": 0.6666666666666666,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "adios": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "aeropuerto": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6666666666666666,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "agosto": {
+      "precision": 0.5,
+      "recall": 0.5,
+      "f1_score": 0.5,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "alto": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "ano": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "arete": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "autobus": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "avion": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "bajo": {
+      "precision": 0.5,
+      "recall": 0.5,
+      "f1_score": 0.5,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "bano": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "bebe": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "biblioteca": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 1.0,
+      "status": "strong"
+    },
+    "bigote": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "blusa": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6666666666666666,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "boca": {
+      "precision": 0.3333333333333333,
+      "recall": 0.5,
+      "f1_score": 0.4,
+      "support": 2.0,
+      "status": "usable"
+    },
+    "bonito": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 1.0,
+      "status": "weak"
+    },
+    "borrador": {
+      "precision": 0.6666666666666666,
+      "recall": 1.0,
+      "f1_score": 0.8,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "bota": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "buena_persona": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "buenas_noches": {
+      "precision": 0.5,
+      "recall": 0.5,
+      "f1_score": 0.5,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "buenas_tardes": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "buenos_dias": {
+      "precision": 0.25,
+      "recall": 0.5,
+      "f1_score": 0.3333333333333333,
+      "support": 2.0,
+      "status": "usable"
+    },
+    "cabeza": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "calificacion": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6666666666666666,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "cama": {
+      "precision": 0.4,
+      "recall": 1.0,
+      "f1_score": 0.5714285714285714,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "camisa": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "cara": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "carro": {
+      "precision": 0.5,
+      "recall": 0.5,
+      "f1_score": 0.5,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "cine": {
+      "precision": 0.3333333333333333,
+      "recall": 1.0,
+      "f1_score": 0.5,
+      "support": 1.0,
+      "status": "strong"
+    },
+    "circo": {
+      "precision": 0.6666666666666666,
+      "recall": 1.0,
+      "f1_score": 0.8,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "closet": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6666666666666666,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "cocina": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "colores": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "comida": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 1.0,
+      "status": "weak"
+    },
+    "cortina": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6666666666666666,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "cristal": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6666666666666666,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "cuaderno": {
+      "precision": 0.25,
+      "recall": 0.5,
+      "f1_score": 0.3333333333333333,
+      "support": 2.0,
+      "status": "usable"
+    },
+    "cuarto": {
+      "precision": 0.25,
+      "recall": 0.5,
+      "f1_score": 0.3333333333333333,
+      "support": 2.0,
+      "status": "usable"
+    },
+    "cuchara": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 1.0,
+      "status": "weak"
+    },
+    "cuchillo": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6666666666666666,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "cuna": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6666666666666666,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "debil": {
+      "precision": 0.25,
+      "recall": 1.0,
+      "f1_score": 0.4,
+      "support": 1.0,
+      "status": "usable"
+    },
+    "delgado": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6666666666666666,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "desayuno": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "dia": {
+      "precision": 0.25,
+      "recall": 0.5,
+      "f1_score": 0.3333333333333333,
+      "support": 2.0,
+      "status": "usable"
+    },
+    "diciembre": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "dientes": {
+      "precision": 0.16666666666666666,
+      "recall": 0.5,
+      "f1_score": 0.25,
+      "support": 2.0,
+      "status": "usable"
+    },
+    "domingo": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "el": {
+      "precision": 0.5,
+      "recall": 0.5,
+      "f1_score": 0.5,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "ella": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "ellas": {
+      "precision": 0.3333333333333333,
+      "recall": 0.5,
+      "f1_score": 0.4,
+      "support": 2.0,
+      "status": "usable"
+    },
+    "ellos": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "enero": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "escoba": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6666666666666666,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "escritura": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 1.0,
+      "status": "weak"
+    },
+    "escuela": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "esposa": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "esposo": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 1.0,
+      "status": "weak"
+    },
+    "examen": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 1.0,
+      "status": "weak"
+    },
+    "familia": {
+      "precision": 0.3333333333333333,
+      "recall": 0.5,
+      "f1_score": 0.4,
+      "support": 2.0,
+      "status": "usable"
+    },
+    "febrero": {
+      "precision": 0.25,
+      "recall": 0.5,
+      "f1_score": 0.3333333333333333,
+      "support": 2.0,
+      "status": "usable"
+    },
+    "feo": {
+      "precision": 0.25,
+      "recall": 1.0,
+      "f1_score": 0.4,
+      "support": 1.0,
+      "status": "usable"
+    },
+    "gordo": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "gracias": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "helicoptero": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 1.0,
+      "status": "weak"
+    },
+    "hermana": {
+      "precision": 0.3333333333333333,
+      "recall": 0.5,
+      "f1_score": 0.4,
+      "support": 2.0,
+      "status": "usable"
+    },
+    "hermano": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "hija": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "hijo": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "hombre": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "hora": {
+      "precision": 0.25,
+      "recall": 0.5,
+      "f1_score": 0.3333333333333333,
+      "support": 2.0,
+      "status": "usable"
+    },
+    "hospital": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "hotel": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "joven": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "jueves": {
+      "precision": 0.25,
+      "recall": 0.5,
+      "f1_score": 0.3333333333333333,
+      "support": 2.0,
+      "status": "usable"
+    },
+    "julio": {
+      "precision": 0.3333333333333333,
+      "recall": 0.5,
+      "f1_score": 0.4,
+      "support": 2.0,
+      "status": "usable"
+    },
+    "junio": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "lampara": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 1.0,
+      "status": "weak"
+    },
+    "lapiz": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "lectura": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "lenguaje_de_senas": {
+      "precision": 0.25,
+      "recall": 1.0,
+      "f1_score": 0.4,
+      "support": 1.0,
+      "status": "usable"
+    },
+    "lunes": {
+      "precision": 0.5,
+      "recall": 0.5,
+      "f1_score": 0.5,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "mala_persona": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "mama": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "martes": {
+      "precision": 0.3333333333333333,
+      "recall": 0.5,
+      "f1_score": 0.4,
+      "support": 2.0,
+      "status": "usable"
+    },
+    "marzo": {
+      "precision": 0.5,
+      "recall": 0.5,
+      "f1_score": 0.5,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "mayo": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "mejilla": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 1.0,
+      "status": "weak"
+    },
+    "mercado": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "mesa": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 1.0,
+      "status": "weak"
+    },
+    "metro": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "miercoles": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "minutos": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "motocicleta": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "mudo": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 1.0,
+      "status": "weak"
+    },
+    "mujeres": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6666666666666666,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "nariz": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 1.0,
+      "status": "weak"
+    },
+    "nino": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "no_me_gusto": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "nos_vemos": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "nosotras": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "novia": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 1.0,
+      "status": "weak"
+    },
+    "noviembre": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "novio": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "octubre": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "ojos": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "oreja": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 1.0,
+      "status": "strong"
+    },
+    "orejas": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "pantalon": {
+      "precision": 0.5,
+      "recall": 0.5,
+      "f1_score": 0.5,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "papa": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "pies": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "pijama": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "piso": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 1.0,
+      "status": "weak"
+    },
+    "plato": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6666666666666666,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "prima": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "primo": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "quiero_mas": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "regla": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "restaurante": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "ropa_interior": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "sabado": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6666666666666666,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "sacapuntas": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "sal": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "segundos": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "semana": {
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1_score": 0.6666666666666666,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "septiembre": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "servilleta": {
+      "precision": 0.5,
+      "recall": 0.5,
+      "f1_score": 0.5,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "sobrina": {
+      "precision": 0.5,
+      "recall": 0.5,
+      "f1_score": 0.5,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "sobrino": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "sordo": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "tenedor": {
+      "precision": 0.6666666666666666,
+      "recall": 1.0,
+      "f1_score": 0.8,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "tia": {
+      "precision": 0.2,
+      "recall": 0.5,
+      "f1_score": 0.2857142857142857,
+      "support": 2.0,
+      "status": "usable"
+    },
+    "tio": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "tractor": {
+      "precision": 0.6666666666666666,
+      "recall": 1.0,
+      "f1_score": 0.8,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "tren": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 1.0,
+      "status": "weak"
+    },
+    "tu": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 1.0,
+      "status": "weak"
+    },
+    "una": {
+      "precision": 0.25,
+      "recall": 0.5,
+      "f1_score": 0.3333333333333333,
+      "support": 2.0,
+      "status": "usable"
+    },
+    "vaso": {
+      "precision": 0.3333333333333333,
+      "recall": 0.5,
+      "f1_score": 0.4,
+      "support": 2.0,
+      "status": "usable"
+    },
+    "ventana": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "viernes": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 2.0,
+      "status": "weak"
+    },
+    "yo": {
+      "precision": 0.5,
+      "recall": 0.5,
+      "f1_score": 0.5,
+      "support": 2.0,
+      "status": "strong"
+    },
+    "zapatos": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 1.0,
+      "status": "weak"
+    }
+  },
+  "source_metrics_path": "C:\\Users\\angel\\OneDrive\\Desktop\\EVIDENCIA_TRADUCTOR_SENAS_IA_20260606_154747\\pruebas\\comparacion_calidad_145_min8\\entrenamiento\\palabras\\metrics.json",
+  "model_path": "modelos/sign_model.keras",
+  "labels_path": "modelos/labels.json",
+  "label_count": 145,
+  "strong_count": 38,
+  "usable_count": 59,
+  "weak_count": 86
+}
