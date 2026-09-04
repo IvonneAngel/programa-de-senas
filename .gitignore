@@ -27,3 +27,11 @@ Thumbs.db
 .mypy_cache/
 app/interfaz-ui/dist/
 *_cache/
+# datos: nunca al repo (pesan GBs y reprocesarlos duele)
+/dataset/raw/*/
+/dataset/processed/
+*.whl
+*.aria2
+pack_*.npy
+pack_index.jsonl
+.validate_cache_done.jsonl
