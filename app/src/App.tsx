@@ -222,8 +222,11 @@ export default function App() {
       setNowTick(Date.now());
       // si hay palabra deletreada y gap >1400, la cierra como palabra completa
       if (currentWord && Date.now() - lastWordTimeRef.current > 1400) {
+        const w = currentWord.toLowerCase();
         setSentenceEntries((prev) => {
-          const entry: WordEntry = { word: currentWord.toLowerCase(), gapBeforeMs: prev.length === 0 ? null : 1400 };
+          // guardia: si el handler ya la cerró, no duplicar
+          if (prev.length > 0 && prev[prev.length - 1].word === w) return prev;
+          const entry: WordEntry = { word: w, gapBeforeMs: prev.length === 0 ? null : 1400 };
           return truncateEntries([...prev, entry]);
         });
         setCurrentWord("");

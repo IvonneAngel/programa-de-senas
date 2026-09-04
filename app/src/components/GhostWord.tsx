@@ -1,64 +1,69 @@
 import { useEffect, useState } from "react";
+import { buildDicts, parseFrecuencia, rankear, type Dicts } from "../grammar/autocomplete";
 
 type Props = { letra: string | null };
 
-// ponytail: diccionario grande 92k + LSM 249, sin demo 7. Carga vía fetch desde /diccionario_grande.txt y /lsm_label_map.json
-let DICCIONARIO_GRANDE: string[] | null = null;
-let LSM_PALABRAS: string[] = [];
+export type Sugerencia = { resto: string; palabra: string };
 
-async function cargarDiccionarios(): Promise<string[]> {
-  if (DICCIONARIO_GRANDE) return [...DICCIONARIO_GRANDE, ...LSM_PALABRAS];
-  try {
-    const [txt, lsmRes] = await Promise.all([
-      fetch("/diccionario_grande.txt").then((r) => (r.ok ? r.text() : "")),
-      fetch("/lsm_label_map.json").then((r) => (r.ok ? r.json() : {})),
-    ]);
-    const palabras = txt
-      .split(/\r?\n/)
-      .map((w) => w.trim().toLowerCase())
-      .filter((w) => w.length >= 2);
-    // LSM 249 del label_map
+// ponytail: 92k + LSM sin demo. Caché único, sin duplicados, rankeado por tecla.
+let CACHED: Dicts | null = null;
+let loadPromise: Promise<void> | null = null;
+
+async function cargar(): Promise<void> {
+  if (CACHED) return;
+  if (loadPromise) return loadPromise;
+  loadPromise = (async () => {
     try {
-      const lsm = Object.values(lsmRes as Record<string, { word: string }>).map((v) => v.word.toLowerCase().trim()).filter(Boolean);
-      LSM_PALABRAS = [...new Set(lsm)];
+      const [txt, lsmRes, cot, es] = await Promise.all([
+        fetch("/diccionario_es_50k.txt").then((r) => (r.ok ? r.text() : "")),
+        fetch("/lsm_label_map.json").then((r) => (r.ok ? r.json() : {})),
+        fetch("/diccionario_cotidiano.txt").then((r) => (r.ok ? r.text() : "")),
+        fetch("/diccionario_lsm_es.txt").then((r) => (r.ok ? r.text() : "")),
+      ]);
+      const lsm: string[] = [];
+      try {
+        for (const v of Object.values(lsmRes as Record<string, { word: string }>)) {
+          if (v.word.trim()) lsm.push(v.word);
+        }
+      } catch { /* sin LSM, solo español + 92k */ }
+      CACHED = buildDicts(parseFrecuencia(txt.split(/\r?\n/)), lsm, cot.split(/\r?\n/), es.split(/\r?\n/).filter((w) => w.trim() && !w.trim().startsWith("#")));
     } catch {
-      LSM_PALABRAS = [];
+      CACHED = buildDicts([], [], [], []);
     }
-    DICCIONARIO_GRANDE = [...new Set([...palabras, ...LSM_PALABRAS])];
-    return [...DICCIONARIO_GRANDE, ...LSM_PALABRAS];
-  } catch {
-    DICCIONARIO_GRANDE = [];
-    return [];
-  }
+  })();
+  return loadPromise;
 }
 
 // precarga al importar
-cargarDiccionarios();
+cargar();
 
 export default function GhostWord({ letra }: Props) {
-  const [sugerencia, setSugerencia] = useState<string | null>(null);
+  const [sugs, setSugs] = useState<Sugerencia[]>([]);
 
   useEffect(() => {
-    if (!letra) { setSugerencia(null); return; }
-    // letra puede ser prefijo de varias letras: "H" -> "ola", "HO" -> "la" (hola) o "spital" (hospital)
-    const lower = letra.toLowerCase().trim();
-    if (!lower) { setSugerencia(null); return; }
-    const buscar = (dict: string[]) => {
-      const matches = dict.filter((w) => w.startsWith(lower)).sort((a, b) => b.length - a.length).slice(0, 3);
-      const match = matches[0];
-      return match ? match.slice(letra.length) : null;
+    let vivo = true;
+    const pref = (letra || "").trim();
+    if (!pref) { setSugs([]); return; }
+    const aplicar = () => {
+      if (!vivo || !CACHED) return;
+      const top = rankear(CACHED, pref, 3);
+      setSugs(top.map((palabra) => ({ palabra, resto: palabra.slice(pref.length) })));
     };
-    if (DICCIONARIO_GRANDE) {
-      setSugerencia(buscar([...DICCIONARIO_GRANDE, ...LSM_PALABRAS]));
-    } else {
-      cargarDiccionarios().then((dict) => setSugerencia(buscar(dict)));
-    }
+    if (CACHED) aplicar();
+    else cargar().then(aplicar);
+    return () => { vivo = false; };
   }, [letra]);
 
-  if (!letra || !sugerencia) return null;
+  if (!letra || sugs.length === 0) return null;
+  const [mejor, ...alt] = sugs;
   return (
-    <span style={{ opacity: 0.4, color: "gray", fontFamily: '"Sheriff Sans", sans-serif' }}>
-      {sugerencia} {/* fantasma Sheriff Sans */}
+    <span style={{ fontFamily: '"Sheriff Sans", sans-serif' }}>
+      <span style={{ opacity: 0.4, color: "gray" }}>{mejor.resto}</span>
+      {alt.length > 0 && (
+        <span style={{ opacity: 0.25, color: "gray", fontSize: "11px" }}>
+          {"  · " + alt.map((a) => a.palabra).join(" · ")}
+        </span>
+      )}
     </span>
   );
 }

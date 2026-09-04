@@ -267,7 +267,51 @@ def feature_path(row: dict, cache_root: Path) -> Path:
     return cache_root / f"{row['sample_id']}.npy"
 
 
+# ponytail: 285k archivos sueltos matan el loader (45min/epoch monohilo, workers muertos en torch 2.9).
+# Con pack_f32.npy (1 memmap 4.3GB) la lectura es instantanea. Si no hay pack, comportamiento viejo.
+_PACK = None
+_PACK_INDEX = None
+
+
+def _pack_for(expected: tuple[int, int], hint: Path | None = None):
+    global _PACK, _PACK_INDEX
+    if tuple(expected) != (30, 126):
+        return None, None
+    if _PACK is None:
+        # ponytail: pack hermano del dataset (…/<dataset>/pack_f32.npy), general para msl-abc y msl-dynamic.
+        cands = []
+        if hint is not None:
+            for up in (hint.parent.parent.parent, hint.parent.parent):
+                cands.append(up / "pack_f32.npy")
+        cands.append(Path("C:/Users/riemann/Desktop/programa de señas/dataset/processed/msl-abc/pack_f32.npy"))
+        pack = next((c for c in cands if c.is_file()), None)
+        if pack is None:
+            return None, None
+        index = pack.parent / "pack_index.jsonl"
+        if not index.is_file():
+            return None, None
+        _PACK = np.memmap(str(pack), dtype="float32", mode="r")
+        _PACK_INDEX = {}
+        with open(index, encoding="utf-8") as f:
+            for line in f:
+                try:
+                    rec = json.loads(line)
+                    _PACK_INDEX[rec["sample_id"]] = int(rec["offset"])
+                except Exception:
+                    pass
+    return _PACK, _PACK_INDEX
+
+
 def load_array(path: Path, expected: tuple[int, int]) -> np.ndarray:
+    pack, index = _pack_for(expected, path)
+    if pack is not None and index is not None:
+        off = index.get(path.stem)
+        if off is not None:
+            # ponytail: .copy() porque el memmap es read-only y torch.from_numpy lo exige escribible
+            # (si no, UserWarning por batch y el aumento in-place fallaria en silencio).
+            array = np.array(pack[off * 30 * 126:(off + 1) * 30 * 126], dtype=np.float32, copy=True).reshape(expected)
+            if bool(np.isfinite(array).all()):
+                return array
     if not path.is_file():
         raise FileNotFoundError(path)
     array = np.load(path, allow_pickle=False).astype(np.float32)
@@ -428,7 +472,26 @@ class CachedSequenceDataset(Dataset):
     def __getitem__(self, index: int):
         row = self.rows[index]
         path = feature_path(row, self.cache_root)
-        array = load_array(path, self.cache_expected)
+        # ponytail: un .npy corrupto no puede matar 10h de entreno. Reintento 1 vez,
+        # luego muestra vecina, luego ceros. Los saltos se cuentan en skipped_corrupt.
+        array = None
+        last_error: Exception | None = None
+        for attempt in range(2):
+            try:
+                array = load_array(path, self.cache_expected)
+                break
+            except Exception as exc:  # noqa: BLE001 - tolerancia total a cache corrupto
+                last_error = exc
+                time.sleep(0.2)
+        if array is None:
+            try:
+                neighbor = self.rows[(index + 1) % len(self.rows)]
+                array = load_array(feature_path(neighbor, self.cache_root), self.cache_expected)
+            except Exception:  # noqa: BLE001
+                array = np.zeros(self.cache_expected, dtype=np.float32)
+            type(self).skipped_corrupt = getattr(type(self), "skipped_corrupt", 0) + 1
+            if type(self).skipped_corrupt % 100 == 1:
+                print(f"[dataset] corruptos saltados={type(self).skipped_corrupt} ultimo={path} err={last_error}", flush=True)
         if self.successor_train_augmentation:
             sample_seed = (self.augmentation_seed * 1_000_003 + self.augmentation_epoch * 10_007 + int(index)) & 0xFFFFFFFF
             array = augment_successor_positions126(array, seed=sample_seed)
@@ -1657,6 +1720,10 @@ def main() -> int:
     parser.add_argument("--signer-covariance-weight", type=float, default=None, help="Peso λ W74, fijado mediante validation antes de test")
     parser.add_argument("--w89-presence-cache-root", type=Path, default=None, help="Caché W84 `(30,354)` solo para construir el ranking train W89")
     parser.add_argument("--skip-test-evaluation", action="store_true", help="W71/W72: mantiene test cerrado mientras se selecciona por validation")
+    parser.add_argument("--resume", action="store_true", help="Continua desde out/best.pt (pesos+historial) en vez de empezar de 0")
+    # ponytail: pin_memory + CUDA + spawn en Windows = cada worker abre contexto CUDA y revienta VRAM.
+    # Default False: workers en CPU puro, sin muerte. Solo activar con 1-2 workers si sobra VRAM.
+    parser.add_argument("--pin-memory", action="store_true", help="Activa pin_memory (solo seguro con pocos workers en CUDA)")
     args = parser.parse_args()
 
     seed_everything(args.seed)
@@ -1743,6 +1810,23 @@ def main() -> int:
         model_kwargs |= {"signer_classes": len(signer_labels), "adversarial_scale": args.signer_loss_weight}
     model = build_model(args.task, **model_kwargs)
     model.to(device)
+    # ponytail: --resume continua donde quedo (pesos+historial+best). Sin esto cada corte tiraba todo.
+    resume_start_epoch = 1
+    resume_history: list = []
+    resume_best = -1.0
+    if args.resume:
+        ckpt_path = args.out / "best.pt"
+        if ckpt_path.is_file():
+            ckpt = torch.load(ckpt_path, map_location=device, weights_only=False)
+            if ckpt.get("task") != args.task or list(ckpt.get("labels", [])) != list(labels_list):
+                raise SystemExit("--resume abortado: best.pt es de otra tarea/labels")
+            model.load_state_dict(ckpt["model_state_dict"])
+            resume_history = list(ckpt.get("history", []))
+            resume_best = max([h.get("validation", {}).get("macro_f1", -1.0) for h in resume_history] + [-1.0])
+            resume_start_epoch = len(resume_history) + 1
+            print(json.dumps({"resumed": True, "start_epoch": resume_start_epoch, "best": resume_best}, ensure_ascii=False), flush=True)
+        else:
+            print(json.dumps({"resumed": False, "razon": "sin best.pt, empieza de 0"}, ensure_ascii=False), flush=True)
     ldam_deferred_reweighting = args.task in {"isolated_word_ldam_deferred_reweighting", "isolated_word_manual_factorial_ldam", "isolated_word_body_anchor_residual_ldam", "isolated_word_quality_gated_body_anchor_ldam", "isolated_word_palm_axis_residual_ldam", "isolated_word_latent_style_mix_ldam", "isolated_word_stochastic_dropout_consistency_ldam", "isolated_word_canonical_motion_vat_ldam", "isolated_word_motion_biased_attentive_pooling_ldam", "isolated_word_energy_phase_residual_ldam", "isolated_word_channel_recalibration_ldam", "isolated_word_hand_branch_structural_dropout_ldam", "isolated_word_dominant_hand_canonicalization_ldam", "isolated_word_multiscale_temporal_difference_residual_ldam", "isolated_word_dct_spectral_residual_ldam", "isolated_word_cosine_classifier_ldam", "isolated_word_train_prior_logit_adjusted_ldam", "isolated_word_fixed_hand_graph_residual_ldam", "isolated_word_classifier_coherence_ldam", "isolated_word_focal_ldam_deferred_reweighting", "isolated_word_class_balanced_sampling_ldam", "isolated_word_path_signature_early_fusion_ldam"}
     if args.task == "isolated_word_cross_signer_supervised_contrast_ldam":
         ldam_deferred_reweighting = True
@@ -1864,12 +1948,12 @@ def main() -> int:
     train_sampler = build_class_balanced_train_sampler(train_rows, args.seed) if class_balanced_sampling else None
     episode_sampler = CrossSignerEpisodeBatchSampler(train_rows, seed=args.seed) if episodic_real_reference else None
     signer_sampler = SignerStratifiedBatchSampler(train_rows, seed=args.seed) if signer_stratified else None
-    train_loader = DataLoader(train_dataset, batch_sampler=episode_sampler or signer_sampler, num_workers=args.num_workers, pin_memory=device.type == "cuda") if (episode_sampler is not None or signer_sampler is not None) else DataLoader(train_dataset, batch_size=args.batch_size, shuffle=train_sampler is None, sampler=train_sampler, num_workers=args.num_workers, pin_memory=device.type == "cuda")
+    train_loader = DataLoader(train_dataset, batch_sampler=episode_sampler or signer_sampler, num_workers=args.num_workers, pin_memory=args.pin_memory) if (episode_sampler is not None or signer_sampler is not None) else DataLoader(train_dataset, batch_size=args.batch_size, shuffle=train_sampler is None, sampler=train_sampler, num_workers=args.num_workers, pin_memory=args.pin_memory)
     classifier_retraining_sampler = build_class_balanced_train_sampler(train_rows, args.seed) if decoupled_classifier_retraining else None
-    classifier_retraining_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=False, sampler=classifier_retraining_sampler, num_workers=args.num_workers, pin_memory=device.type == "cuda") if classifier_retraining_sampler is not None else None
-    pretrain_loader = DataLoader(CachedSequenceDataset(train_rows, args.cache_root, labels, expected), batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=device.type == "cuda") if needs_clean_pretraining else None
-    val_loader = DataLoader(CachedSequenceDataset(val_rows, args.cache_root, labels, expected, dominant_hand_canonicalization=dominant_hand_canonicalization, velocity_magnitude_canonicalization=velocity_magnitude_canonicalization, original_duration_aware=original_duration_aware, relative_time_coordinates=relative_time_coordinates, feature_standardization_stats=feature_standardization_stats, energy_density_uniform_mass=energy_density_uniform_mass), batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers, pin_memory=device.type == "cuda")
-    test_loader = DataLoader(CachedSequenceDataset(test_rows, args.cache_root, labels, expected, dominant_hand_canonicalization=dominant_hand_canonicalization, velocity_magnitude_canonicalization=velocity_magnitude_canonicalization, original_duration_aware=original_duration_aware, relative_time_coordinates=relative_time_coordinates, feature_standardization_stats=feature_standardization_stats, energy_density_uniform_mass=energy_density_uniform_mass), batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers, pin_memory=device.type == "cuda") if test_rows and not args.skip_test_evaluation else None
+    classifier_retraining_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=False, sampler=classifier_retraining_sampler, num_workers=args.num_workers, pin_memory=args.pin_memory) if classifier_retraining_sampler is not None else None
+    pretrain_loader = DataLoader(CachedSequenceDataset(train_rows, args.cache_root, labels, expected), batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=args.pin_memory) if needs_clean_pretraining else None
+    val_loader = DataLoader(CachedSequenceDataset(val_rows, args.cache_root, labels, expected, dominant_hand_canonicalization=dominant_hand_canonicalization, velocity_magnitude_canonicalization=velocity_magnitude_canonicalization, original_duration_aware=original_duration_aware, relative_time_coordinates=relative_time_coordinates, feature_standardization_stats=feature_standardization_stats, energy_density_uniform_mass=energy_density_uniform_mass), batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers, pin_memory=args.pin_memory)
+    test_loader = DataLoader(CachedSequenceDataset(test_rows, args.cache_root, labels, expected, dominant_hand_canonicalization=dominant_hand_canonicalization, velocity_magnitude_canonicalization=velocity_magnitude_canonicalization, original_duration_aware=original_duration_aware, relative_time_coordinates=relative_time_coordinates, feature_standardization_stats=feature_standardization_stats, energy_density_uniform_mass=energy_density_uniform_mass), batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers, pin_memory=args.pin_memory) if test_rows and not args.skip_test_evaluation else None
 
     args.out.mkdir(parents=True, exist_ok=True)
     pretrain_history = []
@@ -1894,13 +1978,18 @@ def main() -> int:
             pretrain_history.append(pretrain_record)
             print(json.dumps({"pretrain": pretrain_record}, ensure_ascii=False), flush=True)
         del order_head
-    history = []
-    best_score = -1.0
+    history = resume_history
+    best_score = resume_best
     stale = 0
     t_start = time.time()
     swa_model = AveragedModel(model, use_buffers=True).to(device) if train_only_swa else None
     swa_start_epoch = 21
-    for epoch in range(1, args.epochs + 1):
+    if resume_start_epoch > 46 and decoupled_classifier_retraining:
+        # ya paso la fase de congelado: congela encoder desde el arranque reanudado
+        head_parameters = freeze_for_decoupled_classifier_retraining(model)
+        optimizer = torch.optim.AdamW(head_parameters, lr=0.0005, weight_decay=args.weight_decay)
+        print(json.dumps({"resumed_frozen_head": True, "start_epoch": resume_start_epoch}, ensure_ascii=False), flush=True)
+    for epoch in range(resume_start_epoch, args.epochs + 1):
         phase = "representation"
         epoch_loader = train_loader
         train_dataset.set_augmentation_epoch(epoch)
@@ -1924,7 +2013,7 @@ def main() -> int:
             epoch_rows, phase = w89_curriculum_rows(train_rows, w89_quality_by_sample, epoch)
             epoch_dataset = CachedSequenceDataset(epoch_rows, args.cache_root, labels, expected)
             epoch_generator = torch.Generator().manual_seed(int(args.seed) + 8900 + epoch)
-            epoch_loader = DataLoader(epoch_dataset, batch_size=args.batch_size, shuffle=True, generator=epoch_generator, num_workers=args.num_workers, pin_memory=device.type == "cuda")
+            epoch_loader = DataLoader(epoch_dataset, batch_size=args.batch_size, shuffle=True, generator=epoch_generator, num_workers=args.num_workers, pin_memory=args.pin_memory)
         train_metrics = run_epoch(model, epoch_loader, epoch_criterion, device, optimizer, len(labels_list), signer_loss_weight=args.signer_loss_weight if args.task == "isolated_word_signer_invariant" else 0.0, consistency_loss_weight=args.temporal_consistency_weight if temporal_consistency_range else 0.0, consistency_temperature=args.temporal_consistency_temperature, cross_signer_feature_mixup=cross_signer_feature_mixup, cross_signer_supervised_contrast=cross_signer_supervised_contrast, contrastive_soft_dtw_alignment=contrastive_soft_dtw_alignment, hopfield_prototype_memory=hopfield_prototype_memory, use_log_euclidean_covariance_consistency=covariance_pairing, uncertainty_log_variances=uncertainty_log_variances, use_sharpness_aware_minimization=sharpness_aware_w3, group_dro_log_weights=group_dro_log_weights, group_dro_ldam=group_dro_ldam, mean_teacher=mean_teacher, use_position_velocity_representation_consistency=position_velocity_representation_consistency, manual_factorial_ldam=manual_factorial_ldam, stochastic_dropout_consistency=stochastic_dropout_consistency, canonical_motion_vat=canonical_motion_vat, motion_adaptive_temporal_coherence=motion_adaptive_temporal_coherence, episodic_real_reference=episodic_real_reference, successor_temporal_relation_pairs=args.task == "successor_temporal_relation_pairs", successor_selective_core_relation=args.task == "successor_selective_core_relation", soft_presence_weight=soft_presence_weight, masked_hand_reconstruction=masked_hand_reconstruction, uniform_label_smoothing=uniform_label_smoothing, ecoc_auxiliary_head=ecoc_auxiliary_head, signer_vrex=signer_vrex, train_prior_log_priors_tensor=prior_log_values, classifier_coherence_weight=0.10 if classifier_coherence else 0.0, focal_ldam_gamma=1.0 if focal_ldam else None, ldam_class_margins=epoch_margins, ldam_late_weights=epoch_late_weights, confusion_spectral_weight=confusion_spectral_weight if confusion_spectral_ldam and epoch >= 31 else 0.0, signer_covariance_weight=signer_covariance_weight if signer_covariance_alignment_ldam and epoch >= 31 else 0.0, signer_covariance_task=signer_covariance_alignment_ldam, epoch=epoch, frozen_encoder_eval=decoupled_classifier_retraining and epoch >= 46)
         if swa_model is not None and epoch >= swa_start_epoch:
             swa_model.update_parameters(model)

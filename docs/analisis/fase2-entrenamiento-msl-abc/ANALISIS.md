@@ -8,3 +8,16 @@
 **Bolita:** `AuroraBallWithLetter` drag persistente, `Sheriff Sans`, `GhostWord` 92k+LSM 249, color 5min azul→morado→rojo, solo letra real sin fake, oración general por pausas `>600ms , >1400ms .`
 **Sistema:** `sistema/parallel_controller` 14 workers, `memory_analyzer` batch auto, `auto_extract` Pool14, `log-server` + `Task Scheduler` desacoplado, `browser-errors.log` 0 errores
 **Por qué se cortó:** EOFError 2 npy 0 bytes + 1 de 128 bytes (interrupción) → borrados y re-extraídos, luego cortado a petición en epoch1 para subir
+
+## Final REAL (2026-09-04, datos reales MediaPipe, completado done:true)
+- **Resultado:** `best val macro_f1 0.9871`, TEST `acc 0.9878 macro_f1 0.9879` (41,773). 21 letras.
+- **Cómo:** pack 4.3GB + batch 256 + pin_memory + CUDA RTX + prioridad Alta + plan máximo.
+  Mock archivado en `_desactualizado/modelos-previos-20260903-0135/msl-abc-mock-best.pt`.
+- Dinámicas J,K,Ñ,Q,X,Z: TEST `0.9667` en `docs/analisis/fase2-dinamicas/`. 27/27 letras con modelo.
+
+## Final viejo mock (2026-09-03 22:48, NO válido, archivado)
+- **CUDA:** torch 2.9.1+cu126, RTX 4060 8GB detectada. Pico GPU 18% en cómputo (cap laptop bloqueado, no ampliable).
+- **Pack:** `pack_f32.npy` 4.3GB + `pack_index.jsonl` 279,716 (0 malos). Epoch 50min → ~1min.
+- **Vel:** batch 256, num-workers 0 (spawn torch 2.9.1 + pin_memory revienta VRAM con workers; flag `--pin-memory` añadido, default off).
+- **Resultado:** `best.pt 551KB`, `metrics.json`. train acc 0.049 / val acc 0.050 / best val macro_f1 0.00458 / test acc 0.0477 (azar 0.038). Mejora de calidad mínima en fase representation con 26 letras estáticas; early stopping (patience 8) cortó correctamente.
+- **Blindaje:** `validate_cache.py` (dataset 100% limpio), `__getitem__` tolerante, `--resume` probado (epochs 2, 6, 18), watchdog `lsm-watchdog` cada 5 min.
