@@ -1,0 +1,1496 @@
+{
+  "001": {
+    "word": "Good morning",
+    "word_id": "good_morning",
+    "grouping": "Greetings",
+    "class_number": 1
+  },
+  "002": {
+    "word": "Good afternoon",
+    "word_id": "good_afternoon",
+    "grouping": "",
+    "class_number": 2
+  },
+  "003": {
+    "word": "Good night",
+    "word_id": "good_night",
+    "grouping": "",
+    "class_number": 3
+  },
+  "004": {
+    "word": "Thank you",
+    "word_id": "thank_you",
+    "grouping": "",
+    "class_number": 4
+  },
+  "005": {
+    "word": "Please",
+    "word_id": "please",
+    "grouping": "",
+    "class_number": 5
+  },
+  "006": {
+    "word": "See you",
+    "word_id": "see_you",
+    "grouping": "",
+    "class_number": 6
+  },
+  "007": {
+    "word": "goodbye",
+    "word_id": "goodbye",
+    "grouping": "",
+    "class_number": 7
+  },
+  "008": {
+    "word": "Day",
+    "word_id": "day",
+    "grouping": "Time",
+    "class_number": 8
+  },
+  "009": {
+    "word": "Hour",
+    "word_id": "hour",
+    "grouping": "",
+    "class_number": 9
+  },
+  "010": {
+    "word": "Week",
+    "word_id": "week",
+    "grouping": "",
+    "class_number": 10
+  },
+  "011": {
+    "word": "Minutes",
+    "word_id": "minutes",
+    "grouping": "",
+    "class_number": 11
+  },
+  "012": {
+    "word": "Seconds",
+    "word_id": "seconds",
+    "grouping": "",
+    "class_number": 12
+  },
+  "013": {
+    "word": "Monday",
+    "word_id": "monday",
+    "grouping": "Weekdays",
+    "class_number": 13
+  },
+  "014": {
+    "word": "Tuesday",
+    "word_id": "tuesday",
+    "grouping": "",
+    "class_number": 14
+  },
+  "015": {
+    "word": "Wednesday",
+    "word_id": "wednesday",
+    "grouping": "",
+    "class_number": 15
+  },
+  "016": {
+    "word": "Thursday",
+    "word_id": "thursday",
+    "grouping": "",
+    "class_number": 16
+  },
+  "017": {
+    "word": "Friday",
+    "word_id": "friday",
+    "grouping": "",
+    "class_number": 17
+  },
+  "018": {
+    "word": "Saturday",
+    "word_id": "saturday",
+    "grouping": "",
+    "class_number": 18
+  },
+  "019": {
+    "word": "Sunday",
+    "word_id": "sunday",
+    "grouping": "",
+    "class_number": 19
+  },
+  "020": {
+    "word": "January",
+    "word_id": "january",
+    "grouping": "Months",
+    "class_number": 20
+  },
+  "021": {
+    "word": "February",
+    "word_id": "february",
+    "grouping": "",
+    "class_number": 21
+  },
+  "022": {
+    "word": "March",
+    "word_id": "march",
+    "grouping": "",
+    "class_number": 22
+  },
+  "023": {
+    "word": "April",
+    "word_id": "april",
+    "grouping": "",
+    "class_number": 23
+  },
+  "024": {
+    "word": "May",
+    "word_id": "may",
+    "grouping": "",
+    "class_number": 24
+  },
+  "025": {
+    "word": "June",
+    "word_id": "june",
+    "grouping": "",
+    "class_number": 25
+  },
+  "026": {
+    "word": "July",
+    "word_id": "july",
+    "grouping": "",
+    "class_number": 26
+  },
+  "027": {
+    "word": "August",
+    "word_id": "august",
+    "grouping": "",
+    "class_number": 27
+  },
+  "028": {
+    "word": "September",
+    "word_id": "september",
+    "grouping": "",
+    "class_number": 28
+  },
+  "029": {
+    "word": "October",
+    "word_id": "october",
+    "grouping": "",
+    "class_number": 29
+  },
+  "030": {
+    "word": "November",
+    "word_id": "november",
+    "grouping": "",
+    "class_number": 30
+  },
+  "031": {
+    "word": "December",
+    "word_id": "december",
+    "grouping": "",
+    "class_number": 31
+  },
+  "032": {
+    "word": "Year",
+    "word_id": "year",
+    "grouping": "",
+    "class_number": 32
+  },
+  "033": {
+    "word": "Qualification",
+    "word_id": "qualification",
+    "grouping": "School supplies",
+    "class_number": 33
+  },
+  "034": {
+    "word": "Lesson",
+    "word_id": "lesson",
+    "grouping": "",
+    "class_number": 34
+  },
+  "035": {
+    "word": "Notebook",
+    "word_id": "notebook",
+    "grouping": "",
+    "class_number": 35
+  },
+  "036": {
+    "word": "School",
+    "word_id": "school",
+    "grouping": "",
+    "class_number": 36
+  },
+  "037": {
+    "word": "Pencil",
+    "word_id": "pencil",
+    "grouping": "",
+    "class_number": 37
+  },
+  "038": {
+    "word": "Reading",
+    "word_id": "reading",
+    "grouping": "",
+    "class_number": 38
+  },
+  "039": {
+    "word": "Sign language",
+    "word_id": "sign_language",
+    "grouping": "",
+    "class_number": 39
+  },
+  "040": {
+    "word": "Exam",
+    "word_id": "exam",
+    "grouping": "",
+    "class_number": 40
+  },
+  "041": {
+    "word": "Writing",
+    "word_id": "writing",
+    "grouping": "",
+    "class_number": 41
+  },
+  "042": {
+    "word": "Eraser",
+    "word_id": "eraser",
+    "grouping": "",
+    "class_number": 42
+  },
+  "043": {
+    "word": "Pencil sharpener",
+    "word_id": "pencil_sharpener",
+    "grouping": "",
+    "class_number": 43
+  },
+  "044": {
+    "word": "Ruler",
+    "word_id": "ruler",
+    "grouping": "",
+    "class_number": 44
+  },
+  "045": {
+    "word": "Colors",
+    "word_id": "colors",
+    "grouping": "",
+    "class_number": 45
+  },
+  "046": {
+    "word": "Grandmother",
+    "word_id": "grandmother",
+    "grouping": "Family",
+    "class_number": 46
+  },
+  "047": {
+    "word": "Grandfather",
+    "word_id": "grandfather",
+    "grouping": "",
+    "class_number": 47
+  },
+  "048": {
+    "word": "Wife",
+    "word_id": "wife",
+    "grouping": "",
+    "class_number": 48
+  },
+  "049": {
+    "word": "Husband",
+    "word_id": "husband",
+    "grouping": "",
+    "class_number": 49
+  },
+  "050": {
+    "word": "Family",
+    "word_id": "family",
+    "grouping": "",
+    "class_number": 50
+  },
+  "051": {
+    "word": "Sister",
+    "word_id": "sister",
+    "grouping": "",
+    "class_number": 51
+  },
+  "052": {
+    "word": "Brother",
+    "word_id": "brother",
+    "grouping": "",
+    "class_number": 52
+  },
+  "053": {
+    "word": "Son",
+    "word_id": "son",
+    "grouping": "",
+    "class_number": 53
+  },
+  "054": {
+    "word": "Daughter",
+    "word_id": "daughter",
+    "grouping": "",
+    "class_number": 54
+  },
+  "055": {
+    "word": "Man",
+    "word_id": "man",
+    "grouping": "",
+    "class_number": 55
+  },
+  "056": {
+    "word": "Women",
+    "word_id": "women",
+    "grouping": "",
+    "class_number": 56
+  },
+  "057": {
+    "word": "Father",
+    "word_id": "father",
+    "grouping": "",
+    "class_number": 57
+  },
+  "058": {
+    "word": "Mother",
+    "word_id": "mother",
+    "grouping": "",
+    "class_number": 58
+  },
+  "059": {
+    "word": "Girlfriend",
+    "word_id": "girlfriend",
+    "grouping": "",
+    "class_number": 59
+  },
+  "060": {
+    "word": "Boyfriend",
+    "word_id": "boyfriend",
+    "grouping": "",
+    "class_number": 60
+  },
+  "061": {
+    "word": "Cousin girl",
+    "word_id": "cousin_girl",
+    "grouping": "",
+    "class_number": 61
+  },
+  "062": {
+    "word": "Cousin boy",
+    "word_id": "cousin_boy",
+    "grouping": "",
+    "class_number": 62
+  },
+  "063": {
+    "word": "Niece",
+    "word_id": "niece",
+    "grouping": "",
+    "class_number": 63
+  },
+  "064": {
+    "word": "Nephew",
+    "word_id": "nephew",
+    "grouping": "",
+    "class_number": 64
+  },
+  "065": {
+    "word": "Aunt",
+    "word_id": "aunt",
+    "grouping": "",
+    "class_number": 65
+  },
+  "066": {
+    "word": "Uncle",
+    "word_id": "uncle",
+    "grouping": "",
+    "class_number": 66
+  },
+  "067": {
+    "word": "Room",
+    "word_id": "room",
+    "grouping": "House stuff",
+    "class_number": 67
+  },
+  "068": {
+    "word": "bathroom",
+    "word_id": "bathroom",
+    "grouping": "",
+    "class_number": 68
+  },
+  "069": {
+    "word": "Kitchen",
+    "word_id": "kitchen",
+    "grouping": "",
+    "class_number": 69
+  },
+  "070": {
+    "word": "Bed",
+    "word_id": "bed",
+    "grouping": "",
+    "class_number": 70
+  },
+  "071": {
+    "word": "Home",
+    "word_id": "home",
+    "grouping": "",
+    "class_number": 71
+  },
+  "072": {
+    "word": "Closet",
+    "word_id": "closet",
+    "grouping": "",
+    "class_number": 72
+  },
+  "073": {
+    "word": "Curtain",
+    "word_id": "curtain",
+    "grouping": "",
+    "class_number": 73
+  },
+  "074": {
+    "word": "cradle",
+    "word_id": "cradle",
+    "grouping": "",
+    "class_number": 74
+  },
+  "075": {
+    "word": "Ceiling",
+    "word_id": "ceiling",
+    "grouping": "",
+    "class_number": 75
+  },
+  "076": {
+    "word": "Floor",
+    "word_id": "floor",
+    "grouping": "",
+    "class_number": 76
+  },
+  "077": {
+    "word": "Stairs",
+    "word_id": "stairs",
+    "grouping": "",
+    "class_number": 77
+  },
+  "078": {
+    "word": "Broom",
+    "word_id": "broom",
+    "grouping": "",
+    "class_number": 78
+  },
+  "079": {
+    "word": "Lamp",
+    "word_id": "lamp",
+    "grouping": "",
+    "class_number": 79
+  },
+  "080": {
+    "word": "Table",
+    "word_id": "table",
+    "grouping": "",
+    "class_number": 80
+  },
+  "081": {
+    "word": "Wall",
+    "word_id": "wall",
+    "grouping": "",
+    "class_number": 81
+  },
+  "082": {
+    "word": "Hall",
+    "word_id": "hall",
+    "grouping": "",
+    "class_number": 82
+  },
+  "083": {
+    "word": "pane",
+    "word_id": "pane",
+    "grouping": "",
+    "class_number": 83
+  },
+  "084": {
+    "word": "Window",
+    "word_id": "window",
+    "grouping": "",
+    "class_number": 84
+  },
+  "085": {
+    "word": "Door",
+    "word_id": "door",
+    "grouping": "",
+    "class_number": 85
+  },
+  "086": {
+    "word": "Adult",
+    "word_id": "adult",
+    "grouping": "Adjectives",
+    "class_number": 86
+  },
+  "087": {
+    "word": "Young",
+    "word_id": "young",
+    "grouping": "",
+    "class_number": 87
+  },
+  "088": {
+    "word": "child",
+    "word_id": "child",
+    "grouping": "",
+    "class_number": 88
+  },
+  "089": {
+    "word": "Baby",
+    "word_id": "baby",
+    "grouping": "",
+    "class_number": 89
+  },
+  "090": {
+    "word": "Ugly",
+    "word_id": "ugly",
+    "grouping": "",
+    "class_number": 90
+  },
+  "091": {
+    "word": "Pretty",
+    "word_id": "pretty",
+    "grouping": "",
+    "class_number": 91
+  },
+  "092": {
+    "word": "Bad person",
+    "word_id": "bad_person",
+    "grouping": "",
+    "class_number": 92
+  },
+  "093": {
+    "word": "Deaf",
+    "word_id": "deaf",
+    "grouping": "",
+    "class_number": 93
+  },
+  "094": {
+    "word": "Dumb",
+    "word_id": "dumb",
+    "grouping": "",
+    "class_number": 94
+  },
+  "095": {
+    "word": "Strong",
+    "word_id": "strong",
+    "grouping": "",
+    "class_number": 95
+  },
+  "096": {
+    "word": "Fat",
+    "word_id": "fat",
+    "grouping": "",
+    "class_number": 96
+  },
+  "097": {
+    "word": "High",
+    "word_id": "high",
+    "grouping": "",
+    "class_number": 97
+  },
+  "098": {
+    "word": "Low",
+    "word_id": "low",
+    "grouping": "",
+    "class_number": 98
+  },
+  "099": {
+    "word": "good person",
+    "word_id": "good_person",
+    "grouping": "",
+    "class_number": 99
+  },
+  "100": {
+    "word": "Blind",
+    "word_id": "blind",
+    "grouping": "",
+    "class_number": 100
+  },
+  "101": {
+    "word": "Weak",
+    "word_id": "weak",
+    "grouping": "",
+    "class_number": 101
+  },
+  "102": {
+    "word": "Slim",
+    "word_id": "slim",
+    "grouping": "",
+    "class_number": 102
+  },
+  "103": {
+    "word": "Spoon",
+    "word_id": "spoon",
+    "grouping": "Cuisine",
+    "class_number": 103
+  },
+  "104": {
+    "word": "Knife",
+    "word_id": "knife",
+    "grouping": "",
+    "class_number": 104
+  },
+  "105": {
+    "word": "Dish",
+    "word_id": "dish",
+    "grouping": "",
+    "class_number": 105
+  },
+  "106": {
+    "word": "Glass",
+    "word_id": "glass",
+    "grouping": "",
+    "class_number": 106
+  },
+  "107": {
+    "word": "Meal",
+    "word_id": "meal",
+    "grouping": "",
+    "class_number": 107
+  },
+  "108": {
+    "word": "Dinner",
+    "word_id": "dinner",
+    "grouping": "",
+    "class_number": 108
+  },
+  "109": {
+    "word": "Breakfast",
+    "word_id": "breakfast",
+    "grouping": "",
+    "class_number": 109
+  },
+  "110": {
+    "word": "Fork",
+    "word_id": "fork",
+    "grouping": "",
+    "class_number": 110
+  },
+  "111": {
+    "word": "Napkin",
+    "word_id": "napkin",
+    "grouping": "",
+    "class_number": 111
+  },
+  "112": {
+    "word": "Salt",
+    "word_id": "salt",
+    "grouping": "",
+    "class_number": 112
+  },
+  "113": {
+    "word": "I want more",
+    "word_id": "i_want_more",
+    "grouping": "",
+    "class_number": 113
+  },
+  "114": {
+    "word": "I did not like",
+    "word_id": "i_did_not_like",
+    "grouping": "",
+    "class_number": 114
+  },
+  "115": {
+    "word": "Earring",
+    "word_id": "earring",
+    "grouping": "Clothes",
+    "class_number": 115
+  },
+  "116": {
+    "word": "Blouse",
+    "word_id": "blouse",
+    "grouping": "",
+    "class_number": 116
+  },
+  "117": {
+    "word": "Boot",
+    "word_id": "boot",
+    "grouping": "",
+    "class_number": 117
+  },
+  "118": {
+    "word": "Shirt",
+    "word_id": "shirt",
+    "grouping": "",
+    "class_number": 118
+  },
+  "119": {
+    "word": "Necklace",
+    "word_id": "necklace",
+    "grouping": "",
+    "class_number": 119
+  },
+  "120": {
+    "word": "Glove",
+    "word_id": "glove",
+    "grouping": "",
+    "class_number": 120
+  },
+  "121": {
+    "word": "pants",
+    "word_id": "pants",
+    "grouping": "",
+    "class_number": 121
+  },
+  "122": {
+    "word": "Pijama",
+    "word_id": "pijama",
+    "grouping": "",
+    "class_number": 122
+  },
+  "123": {
+    "word": "Shorts",
+    "word_id": "shorts",
+    "grouping": "",
+    "class_number": 123
+  },
+  "124": {
+    "word": "Suit",
+    "word_id": "suit",
+    "grouping": "",
+    "class_number": 124
+  },
+  "125": {
+    "word": "Dress",
+    "word_id": "dress",
+    "grouping": "",
+    "class_number": 125
+  },
+  "126": {
+    "word": "Shoes",
+    "word_id": "shoes",
+    "grouping": "",
+    "class_number": 126
+  },
+  "127": {
+    "word": "Skirt",
+    "word_id": "skirt",
+    "grouping": "",
+    "class_number": 127
+  },
+  "128": {
+    "word": "Underwear",
+    "word_id": "underwear",
+    "grouping": "",
+    "class_number": 128
+  },
+  "129": {
+    "word": "Beard",
+    "word_id": "beard",
+    "grouping": "Body parts",
+    "class_number": 129
+  },
+  "130": {
+    "word": "Moustache",
+    "word_id": "moustache",
+    "grouping": "",
+    "class_number": 130
+  },
+  "131": {
+    "word": "Arm",
+    "word_id": "arm",
+    "grouping": "",
+    "class_number": 131
+  },
+  "132": {
+    "word": "Mouth",
+    "word_id": "mouth",
+    "grouping": "",
+    "class_number": 132
+  },
+  "133": {
+    "word": "Hair",
+    "word_id": "hair",
+    "grouping": "",
+    "class_number": 133
+  },
+  "134": {
+    "word": "Head",
+    "word_id": "head",
+    "grouping": "",
+    "class_number": 134
+  },
+  "135": {
+    "word": "Face",
+    "word_id": "face",
+    "grouping": "",
+    "class_number": 135
+  },
+  "136": {
+    "word": "Feet",
+    "word_id": "feet",
+    "grouping": "",
+    "class_number": 136
+  },
+  "137": {
+    "word": "Teeth",
+    "word_id": "teeth",
+    "grouping": "",
+    "class_number": 137
+  },
+  "138": {
+    "word": "Eyes",
+    "word_id": "eyes",
+    "grouping": "",
+    "class_number": 138
+  },
+  "139": {
+    "word": "Ears",
+    "word_id": "ears",
+    "grouping": "",
+    "class_number": 139
+  },
+  "140": {
+    "word": "Nose",
+    "word_id": "nose",
+    "grouping": "",
+    "class_number": 140
+  },
+  "141": {
+    "word": "Ear",
+    "word_id": "ear",
+    "grouping": "",
+    "class_number": 141
+  },
+  "142": {
+    "word": "Cheek",
+    "word_id": "cheek",
+    "grouping": "",
+    "class_number": 142
+  },
+  "143": {
+    "word": "Nail",
+    "word_id": "nail",
+    "grouping": "",
+    "class_number": 143
+  },
+  "144": {
+    "word": "Plane",
+    "word_id": "plane",
+    "grouping": "Vehicles",
+    "class_number": 144
+  },
+  "145": {
+    "word": "Ship",
+    "word_id": "ship",
+    "grouping": "",
+    "class_number": 145
+  },
+  "146": {
+    "word": "Bicycle",
+    "word_id": "bicycle",
+    "grouping": "",
+    "class_number": 146
+  },
+  "147": {
+    "word": "Truck",
+    "word_id": "truck",
+    "grouping": "",
+    "class_number": 147
+  },
+  "148": {
+    "word": "Helicopter",
+    "word_id": "helicopter",
+    "grouping": "",
+    "class_number": 148
+  },
+  "149": {
+    "word": "Car",
+    "word_id": "car",
+    "grouping": "",
+    "class_number": 149
+  },
+  "150": {
+    "word": "Motorcycle",
+    "word_id": "motorcycle",
+    "grouping": "",
+    "class_number": 150
+  },
+  "151": {
+    "word": "Taxi",
+    "word_id": "taxi",
+    "grouping": "",
+    "class_number": 151
+  },
+  "152": {
+    "word": "Tractor",
+    "word_id": "tractor",
+    "grouping": "",
+    "class_number": 152
+  },
+  "153": {
+    "word": "Train",
+    "word_id": "train",
+    "grouping": "",
+    "class_number": 153
+  },
+  "154": {
+    "word": "Subway",
+    "word_id": "subway",
+    "grouping": "",
+    "class_number": 154
+  },
+  "155": {
+    "word": "Bus",
+    "word_id": "bus",
+    "grouping": "",
+    "class_number": 155
+  },
+  "156": {
+    "word": "Van",
+    "word_id": "van",
+    "grouping": "",
+    "class_number": 156
+  },
+  "157": {
+    "word": "Airport",
+    "word_id": "airport",
+    "grouping": "Places",
+    "class_number": 157
+  },
+  "158": {
+    "word": "Library",
+    "word_id": "library",
+    "grouping": "",
+    "class_number": 158
+  },
+  "159": {
+    "word": "Downtown",
+    "word_id": "downtown",
+    "grouping": "",
+    "class_number": 159
+  },
+  "160": {
+    "word": "Cinema",
+    "word_id": "cinema",
+    "grouping": "",
+    "class_number": 160
+  },
+  "161": {
+    "word": "Circus",
+    "word_id": "circus",
+    "grouping": "",
+    "class_number": 161
+  },
+  "162": {
+    "word": "Building",
+    "word_id": "building",
+    "grouping": "",
+    "class_number": 162
+  },
+  "163": {
+    "word": "Hospital",
+    "word_id": "hospital",
+    "grouping": "",
+    "class_number": 163
+  },
+  "164": {
+    "word": "Hotel",
+    "word_id": "hotel",
+    "grouping": "",
+    "class_number": 164
+  },
+  "165": {
+    "word": "Market",
+    "word_id": "market",
+    "grouping": "",
+    "class_number": 165
+  },
+  "166": {
+    "word": "Museum",
+    "word_id": "museum",
+    "grouping": "",
+    "class_number": 166
+  },
+  "167": {
+    "word": "Restaurant",
+    "word_id": "restaurant",
+    "grouping": "",
+    "class_number": 167
+  },
+  "168": {
+    "word": "Supermarket",
+    "word_id": "supermarket",
+    "grouping": "",
+    "class_number": 168
+  },
+  "169": {
+    "word": "Café",
+    "word_id": "cafe",
+    "grouping": "",
+    "class_number": 169
+  },
+  "170": {
+    "word": "I",
+    "word_id": "i",
+    "grouping": "Pronouns",
+    "class_number": 170
+  },
+  "171": {
+    "word": "You",
+    "word_id": "you",
+    "grouping": "",
+    "class_number": 171
+  },
+  "172": {
+    "word": "He",
+    "word_id": "he",
+    "grouping": "",
+    "class_number": 172
+  },
+  "173": {
+    "word": "She",
+    "word_id": "she",
+    "grouping": "",
+    "class_number": 173
+  },
+  "174": {
+    "word": "They(male)",
+    "word_id": "theymale",
+    "grouping": "",
+    "class_number": 174
+  },
+  "175": {
+    "word": "They(female)",
+    "word_id": "theyfemale",
+    "grouping": "",
+    "class_number": 175
+  },
+  "176": {
+    "word": "Us(male)",
+    "word_id": "usmale",
+    "grouping": "",
+    "class_number": 176
+  },
+  "177": {
+    "word": "Us(female)",
+    "word_id": "usfemale",
+    "grouping": "",
+    "class_number": 177
+  },
+  "178": {
+    "word": "You(plural)",
+    "word_id": "youplural",
+    "grouping": "",
+    "class_number": 178
+  },
+  "179": {
+    "word": "None",
+    "word_id": "none",
+    "grouping": "",
+    "class_number": 179
+  },
+  "180": {
+    "word": "Someone",
+    "word_id": "someone",
+    "grouping": "",
+    "class_number": 180
+  },
+  "181": {
+    "word": "Embrace",
+    "word_id": "embrace",
+    "grouping": "Verbs",
+    "class_number": 181
+  },
+  "182": {
+    "word": "Love",
+    "word_id": "love",
+    "grouping": "",
+    "class_number": 182
+  },
+  "183": {
+    "word": "fix",
+    "word_id": "fix",
+    "grouping": "",
+    "class_number": 183
+  },
+  "184": {
+    "word": "Frighten",
+    "word_id": "frighten",
+    "grouping": "",
+    "class_number": 184
+  },
+  "185": {
+    "word": "Help",
+    "word_id": "help",
+    "grouping": "",
+    "class_number": 185
+  },
+  "186": {
+    "word": "Look for",
+    "word_id": "look_for",
+    "grouping": "",
+    "class_number": 186
+  },
+  "187": {
+    "word": "To silence",
+    "word_id": "to_silence",
+    "grouping": "",
+    "class_number": 187
+  },
+  "188": {
+    "word": "Close",
+    "word_id": "close",
+    "grouping": "",
+    "class_number": 188
+  },
+  "189": {
+    "word": "Believe",
+    "word_id": "believe",
+    "grouping": "",
+    "class_number": 189
+  },
+  "190": {
+    "word": "Eat",
+    "word_id": "eat",
+    "grouping": "",
+    "class_number": 190
+  },
+  "191": {
+    "word": "Stop",
+    "word_id": "stop",
+    "grouping": "",
+    "class_number": 191
+  },
+  "192": {
+    "word": "Sleep",
+    "word_id": "sleep",
+    "grouping": "",
+    "class_number": 192
+  },
+  "193": {
+    "word": "Slap",
+    "word_id": "slap",
+    "grouping": "",
+    "class_number": 193
+  },
+  "194": {
+    "word": "Keep",
+    "word_id": "keep",
+    "grouping": "",
+    "class_number": 194
+  },
+  "195": {
+    "word": "Play",
+    "word_id": "play",
+    "grouping": "",
+    "class_number": 195
+  },
+  "196": {
+    "word": "Pick up",
+    "word_id": "pick_up",
+    "grouping": "",
+    "class_number": 196
+  },
+  "197": {
+    "word": "Cry",
+    "word_id": "cry",
+    "grouping": "",
+    "class_number": 197
+  },
+  "198": {
+    "word": "Lie",
+    "word_id": "lie",
+    "grouping": "",
+    "class_number": 198
+  },
+  "199": {
+    "word": "Hear",
+    "word_id": "hear",
+    "grouping": "",
+    "class_number": 199
+  },
+  "200": {
+    "word": "Forget",
+    "word_id": "forget",
+    "grouping": "",
+    "class_number": 200
+  },
+  "201": {
+    "word": "Do",
+    "word_id": "do",
+    "grouping": "",
+    "class_number": 201
+  },
+  "202": {
+    "word": "Laugh",
+    "word_id": "laugh",
+    "grouping": "",
+    "class_number": 202
+  },
+  "203": {
+    "word": "Throw",
+    "word_id": "throw",
+    "grouping": "",
+    "class_number": 203
+  },
+  "204": {
+    "word": "Order",
+    "word_id": "order",
+    "grouping": "",
+    "class_number": 204
+  },
+  "205": {
+    "word": "Clean",
+    "word_id": "clean",
+    "grouping": "",
+    "class_number": 205
+  },
+  "206": {
+    "word": "Actor",
+    "word_id": "actor",
+    "grouping": "Professions",
+    "class_number": 206
+  },
+  "207": {
+    "word": "Firefighter",
+    "word_id": "firefighter",
+    "grouping": "",
+    "class_number": 207
+  },
+  "208": {
+    "word": "Doctor",
+    "word_id": "doctor",
+    "grouping": "",
+    "class_number": 208
+  },
+  "209": {
+    "word": "Teacher",
+    "word_id": "teacher",
+    "grouping": "",
+    "class_number": 209
+  },
+  "210": {
+    "word": "Waiter",
+    "word_id": "waiter",
+    "grouping": "",
+    "class_number": 210
+  },
+  "211": {
+    "word": "Police",
+    "word_id": "police",
+    "grouping": "",
+    "class_number": 211
+  },
+  "212": {
+    "word": "President",
+    "word_id": "president",
+    "grouping": "",
+    "class_number": 212
+  },
+  "213": {
+    "word": "Secretary",
+    "word_id": "secretary",
+    "grouping": "",
+    "class_number": 213
+  },
+  "214": {
+    "word": "Carpenter",
+    "word_id": "carpenter",
+    "grouping": "",
+    "class_number": 214
+  },
+  "215": {
+    "word": "Mechanic",
+    "word_id": "mechanic",
+    "grouping": "",
+    "class_number": 215
+  },
+  "216": {
+    "word": "Shoemaker",
+    "word_id": "shoemaker",
+    "grouping": "",
+    "class_number": 216
+  },
+  "217": {
+    "word": "Stylist",
+    "word_id": "stylist",
+    "grouping": "",
+    "class_number": 217
+  },
+  "218": {
+    "word": "Sewing",
+    "word_id": "sewing",
+    "grouping": "",
+    "class_number": 218
+  },
+  "219": {
+    "word": "Aguascalientes",
+    "word_id": "aguascalientes",
+    "grouping": "States of México",
+    "class_number": 219
+  },
+  "220": {
+    "word": "B. C. Norte",
+    "word_id": "b_c_norte",
+    "grouping": "",
+    "class_number": 220
+  },
+  "221": {
+    "word": "B. C. Sur",
+    "word_id": "b_c_sur",
+    "grouping": "",
+    "class_number": 221
+  },
+  "222": {
+    "word": "Campeche",
+    "word_id": "campeche",
+    "grouping": "",
+    "class_number": 222
+  },
+  "223": {
+    "word": "Coahuila",
+    "word_id": "coahuila",
+    "grouping": "",
+    "class_number": 223
+  },
+  "224": {
+    "word": "Colima",
+    "word_id": "colima",
+    "grouping": "",
+    "class_number": 224
+  },
+  "225": {
+    "word": "Chiapas",
+    "word_id": "chiapas",
+    "grouping": "",
+    "class_number": 225
+  },
+  "226": {
+    "word": "Chihuahua",
+    "word_id": "chihuahua",
+    "grouping": "",
+    "class_number": 226
+  },
+  "227": {
+    "word": "Sinaloa",
+    "word_id": "sinaloa",
+    "grouping": "",
+    "class_number": 227
+  },
+  "228": {
+    "word": "Durango",
+    "word_id": "durango",
+    "grouping": "",
+    "class_number": 228
+  },
+  "229": {
+    "word": "Guanajuato",
+    "word_id": "guanajuato",
+    "grouping": "",
+    "class_number": 229
+  },
+  "230": {
+    "word": "Guerrero",
+    "word_id": "guerrero",
+    "grouping": "",
+    "class_number": 230
+  },
+  "231": {
+    "word": "Hidalgo",
+    "word_id": "hidalgo",
+    "grouping": "",
+    "class_number": 231
+  },
+  "232": {
+    "word": "Jalisco",
+    "word_id": "jalisco",
+    "grouping": "",
+    "class_number": 232
+  },
+  "233": {
+    "word": "México",
+    "word_id": "mexico",
+    "grouping": "",
+    "class_number": 233
+  },
+  "234": {
+    "word": "Michoacán",
+    "word_id": "michoacan",
+    "grouping": "",
+    "class_number": 234
+  },
+  "235": {
+    "word": "Morelos",
+    "word_id": "morelos",
+    "grouping": "",
+    "class_number": 235
+  },
+  "236": {
+    "word": "Nayarit",
+    "word_id": "nayarit",
+    "grouping": "",
+    "class_number": 236
+  },
+  "237": {
+    "word": "Nuevo León",
+    "word_id": "nuevo_leon",
+    "grouping": "",
+    "class_number": 237
+  },
+  "238": {
+    "word": "Oaxaca",
+    "word_id": "oaxaca",
+    "grouping": "",
+    "class_number": 238
+  },
+  "239": {
+    "word": "Puebla",
+    "word_id": "puebla",
+    "grouping": "",
+    "class_number": 239
+  },
+  "240": {
+    "word": "Querétaro",
+    "word_id": "queretaro",
+    "grouping": "",
+    "class_number": 240
+  },
+  "241": {
+    "word": "Quintana Roo",
+    "word_id": "quintana_roo",
+    "grouping": "",
+    "class_number": 241
+  },
+  "242": {
+    "word": "San Luis Potosí",
+    "word_id": "san_luis_potosi",
+    "grouping": "",
+    "class_number": 242
+  },
+  "243": {
+    "word": "Sonora",
+    "word_id": "sonora",
+    "grouping": "",
+    "class_number": 243
+  },
+  "244": {
+    "word": "Tabasco",
+    "word_id": "tabasco",
+    "grouping": "",
+    "class_number": 244
+  },
+  "245": {
+    "word": "Tamaulipas",
+    "word_id": "tamaulipas",
+    "grouping": "",
+    "class_number": 245
+  },
+  "246": {
+    "word": "Tlaxcala",
+    "word_id": "tlaxcala",
+    "grouping": "",
+    "class_number": 246
+  },
+  "247": {
+    "word": "Veracruz",
+    "word_id": "veracruz",
+    "grouping": "",
+    "class_number": 247
+  },
+  "248": {
+    "word": "Yucatán",
+    "word_id": "yucatan",
+    "grouping": "",
+    "class_number": 248
+  },
+  "249": {
+    "word": "Zacatecas",
+    "word_id": "zacatecas",
+    "grouping": "",
+    "class_number": 249
+  }
+}

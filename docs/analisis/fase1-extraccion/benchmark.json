@@ -1,0 +1,15 @@
+{
+  "instancias": 2447,
+  "ok": 2447,
+  "tiempo_pool_s": 1.6600017547607422,
+  "speedup": {
+    "sec_seq": 0.49414777755737305,
+    "sec_par": 0.2438366413116455,
+    "speedup": 2.026552592339094,
+    "workers": 14,
+    "sample_size": 60
+  },
+  "workers": 14,
+  "prefetch": 4,
+  "device": "cpu"
+}
