@@ -14,15 +14,15 @@ from pathlib import Path
 
 BASE = Path("C:/Users/riemann/Desktop/programa de señas")
 LOCK = BASE / "sistema/.watchdog.lock"
-LOG = BASE / "watchdog.log"
-TRAIN_LOG = BASE / "training_msl_abc.log"
+LOG = BASE / "logs/watchdog.log"
+TRAIN_LOG = BASE / "logs/training_msl_abc.log"
 # ponytail: el watchdog cuida TODOS los entrenos (msl-abc gigante + dinamicas). Un solo dueño.
 ENTRENOS = [
     {"nombre": "msl-abc", "manifest": "dataset/manifests/msl-abc_manifest.csv",
-     "out": "docs/analisis/fase2-entrenamiento-msl-abc", "log": "training_msl_abc.log",
+     "out": "docs/analisis/fase2-entrenamiento-msl-abc", "log": "logs/training_msl_abc.log",
      "batch_cpu": "16", "batch_cuda": "256"},
     {"nombre": "dinamicas", "manifest": "dataset/manifests/msl-dynamic_manifest.csv",
-     "out": "docs/analisis/fase2-dinamicas", "log": "training_dinamicas.log",
+     "out": "docs/analisis/fase2-dinamicas", "log": "logs/training_dinamicas.log",
      "batch_cpu": "16", "batch_cuda": "32"},
 ]
 VENV_PY = Path("C:/Users/riemann/.venv/Scripts/python.exe")
@@ -178,7 +178,7 @@ def launch_download() -> None:
         log("descarga ya levantada por otro, no duplico")
         return
     cmd = (f'cmd.exe /c uv pip install --python "{VENV_PY}" torch --index-url {CUDA_URL} '
-           f'>> torch_install.log 2>&1')
+           f'>> logs/torch_install.log 2>&1')
     pid = wmi_launch(cmd, str(BASE))
     log(f"relanzando descarga torch CUDA pid={pid}")
 
