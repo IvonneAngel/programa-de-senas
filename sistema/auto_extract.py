@@ -7,7 +7,7 @@ import csv, json, hashlib, time, threading, pathlib, multiprocessing, os, sys, z
 from pathlib import Path
 import numpy as np
 
-# --- constantes Ponytail: todo en carpetas/subcarpetas, sin dispersion ---
+# --- constantes: todo en carpetas/subcarpetas, sin dispersion ---
 BASE = Path("C:/Users/riemann/Desktop/programa de señas")
 ZIP_PATH = Path("C:/Users/riemann/Downloads/Mexican sign language dataset.zip")
 RAW_ROOT = BASE / "dataset/raw/mendeley_6rj76z6y3n"

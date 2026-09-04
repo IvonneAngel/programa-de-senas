@@ -267,8 +267,8 @@ def feature_path(row: dict, cache_root: Path) -> Path:
     return cache_root / f"{row['sample_id']}.npy"
 
 
-# ponytail: 285k archivos sueltos matan el loader (45min/epoch monohilo, workers muertos en torch 2.9).
-# Con pack_f32.npy (1 memmap 4.3GB) la lectura es instantanea. Si no hay pack, comportamiento viejo.
+# 285k archivos sueltos matan el loader (45min/epoch monohilo). Con pack_f32.npy
+# (1 memmap 4.3GB) la lectura es instantanea. Si no hay pack, comportamiento viejo.
 _PACK = None
 _PACK_INDEX = None
 
@@ -278,7 +278,7 @@ def _pack_for(expected: tuple[int, int], hint: Path | None = None):
     if tuple(expected) != (30, 126):
         return None, None
     if _PACK is None:
-        # ponytail: pack hermano del dataset (…/<dataset>/pack_f32.npy), general para msl-abc y msl-dynamic.
+        # Pack hermano del dataset (…/<dataset>/pack_f32.npy), general para msl-abc y msl-dynamic.
         cands = []
         if hint is not None:
             for up in (hint.parent.parent.parent, hint.parent.parent):
@@ -307,8 +307,7 @@ def load_array(path: Path, expected: tuple[int, int]) -> np.ndarray:
     if pack is not None and index is not None:
         off = index.get(path.stem)
         if off is not None:
-            # ponytail: .copy() porque el memmap es read-only y torch.from_numpy lo exige escribible
-            # (si no, UserWarning por batch y el aumento in-place fallaria en silencio).
+            # .copy() porque el memmap es read-only y torch.from_numpy lo exige escribible.
             array = np.array(pack[off * 30 * 126:(off + 1) * 30 * 126], dtype=np.float32, copy=True).reshape(expected)
             if bool(np.isfinite(array).all()):
                 return array
@@ -472,8 +471,8 @@ class CachedSequenceDataset(Dataset):
     def __getitem__(self, index: int):
         row = self.rows[index]
         path = feature_path(row, self.cache_root)
-        # ponytail: un .npy corrupto no puede matar 10h de entreno. Reintento 1 vez,
-        # luego muestra vecina, luego ceros. Los saltos se cuentan en skipped_corrupt.
+        # Un .npy corrupto no mata el entreno: reintento 1 vez, luego muestra vecina,
+        # luego ceros. Los saltos se cuentan en skipped_corrupt.
         array = None
         last_error: Exception | None = None
         for attempt in range(2):
@@ -1721,8 +1720,8 @@ def main() -> int:
     parser.add_argument("--w89-presence-cache-root", type=Path, default=None, help="Caché W84 `(30,354)` solo para construir el ranking train W89")
     parser.add_argument("--skip-test-evaluation", action="store_true", help="W71/W72: mantiene test cerrado mientras se selecciona por validation")
     parser.add_argument("--resume", action="store_true", help="Continua desde out/best.pt (pesos+historial) en vez de empezar de 0")
-    # ponytail: pin_memory + CUDA + spawn en Windows = cada worker abre contexto CUDA y revienta VRAM.
-    # Default False: workers en CPU puro, sin muerte. Solo activar con 1-2 workers si sobra VRAM.
+    # pin_memory + CUDA + spawn en Windows = cada worker abre contexto CUDA y revienta VRAM.
+    # Default False: workers en CPU puro. Solo activar con 1-2 workers si sobra VRAM.
     parser.add_argument("--pin-memory", action="store_true", help="Activa pin_memory (solo seguro con pocos workers en CUDA)")
     args = parser.parse_args()
 
@@ -1810,7 +1809,7 @@ def main() -> int:
         model_kwargs |= {"signer_classes": len(signer_labels), "adversarial_scale": args.signer_loss_weight}
     model = build_model(args.task, **model_kwargs)
     model.to(device)
-    # ponytail: --resume continua donde quedo (pesos+historial+best). Sin esto cada corte tiraba todo.
+    # --resume continua donde quedo (pesos+historial+best).
     resume_start_epoch = 1
     resume_history: list = []
     resume_best = -1.0

@@ -5,7 +5,7 @@ type Props = { letra: string | null };
 
 export type Sugerencia = { resto: string; palabra: string };
 
-// ponytail: 92k + LSM sin demo. Caché único, sin duplicados, rankeado por tecla.
+// Caché única de diccionarios (92k + LSM), rankeado por tecla.
 let CACHED: Dicts | null = null;
 let loadPromise: Promise<void> | null = null;
 

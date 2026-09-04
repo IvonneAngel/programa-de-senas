@@ -77,9 +77,9 @@ def frames_a_seq(frames: np.ndarray) -> np.ndarray:
 
 
 _DETECTOR = None
-# ponytail: ruta sin ñ ni espacios; el C++ de MediaPipe no abre "señas".
+# Ruta sin ñ ni espacios: el C++ de MediaPipe no abre "señas".
 _TASK_PATH = Path("C:/msl-models/hand_landmarker.task")
-# ponytail: VIDEO mode exige timestamps crecientes POR DETECTOR (no por video).
+# VIDEO mode exige timestamps crecientes POR DETECTOR (no por video).
 _TS = [0]
 
 
@@ -89,7 +89,7 @@ def _next_ts() -> int:
 
 
 def _init_worker() -> None:
-    # ponytail: 1 detector por worker (crearlo por video costaba 0.5s x 1242).
+    # 1 detector por worker (crearlo por video costaba 0.5s x 1242).
     global _DETECTOR
     import mediapipe as mp
 

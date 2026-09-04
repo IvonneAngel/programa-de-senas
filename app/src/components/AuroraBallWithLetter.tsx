@@ -6,8 +6,7 @@ type Props = { letra: string | null };
 const STORAGE_KEY = "auroraBallPos_v2";
 const DEFAULT_POS = { x: 16, y: 16 }; // top-4 left-4
 
-// ponytail: iframe aísla React 18 + paper-shaders (WebGL) del React 19 de la app. Evita duplicar motor o pelear por window.React.
-// + drag con persistencia para que se quede donde lo dejes.
+// Esfera Aurora en iframe aislado (React 18 + WebGL) + arrastre con persistencia.
 export default function AuroraBallWithLetter({ letra }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState(DEFAULT_POS);

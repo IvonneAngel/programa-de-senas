@@ -50,8 +50,7 @@ def _pack_one(task: tuple[int, str, str]) -> tuple[int, str, bytes, bool]:
 
 
 def main() -> None:
-    # ponytail: ThreadPool 16 para IO (np.load suelta el GIL en lectura).
-    # Processes no: el spawn en Windows es lento y torch-DataLoader ya murio por eso.
+    # ThreadPool 16 para IO (np.load suelta el GIL en lectura; processes no por el spawn en Windows).
     import hashlib  # noqa: F401
     from concurrent.futures import ThreadPoolExecutor
 

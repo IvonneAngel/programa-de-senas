@@ -3,8 +3,7 @@ import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 
-// ponytail: cerebro siempre prendido — captura todo lo que dice el navegador y lo guarda
-// No se entrega nada si hay errores; se lee, se guarda y se revisa.
+// Registro de errores del navegador: captura, guarda en sesión y envía al servidor.
 const BROWSER_LOG_KEY = '__browser_errors__';
 function guardarError(tipo: string, mensaje: string, extra?: string) {
   const entry = `[${new Date().toISOString()}] [${tipo}] ${mensaje}${extra ? ' | ' + extra : ''}`;

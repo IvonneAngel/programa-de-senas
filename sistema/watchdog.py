@@ -16,7 +16,7 @@ BASE = Path("C:/Users/riemann/Desktop/programa de señas")
 LOCK = BASE / "sistema/.watchdog.lock"
 LOG = BASE / "logs/watchdog.log"
 TRAIN_LOG = BASE / "logs/training_msl_abc.log"
-# ponytail: el watchdog cuida TODOS los entrenos (msl-abc gigante + dinamicas). Un solo dueño.
+# El watchdog cuida TODOS los entrenos (msl-abc gigante + dinamicas). Un solo dueño.
 ENTRENOS = [
     {"nombre": "msl-abc", "manifest": "dataset/manifests/msl-abc_manifest.csv",
      "out": "docs/analisis/fase2-entrenamiento-msl-abc", "log": "logs/training_msl_abc.log",
@@ -44,7 +44,7 @@ def log(msg: str) -> None:
 def procs_match(exe: str, substr: str) -> list[int]:
     """Filtra dentro de PowerShell (rapido, sin traer 200 cmdlines).
     Reintenta 1 vez: el CIM frio puede tardar. Nunca devuelve [] sin 2 intentos."""
-    # ponytail: el filtro va dentro de powershell; traer todo y filtrar en python era lento y fragil.
+    # El filtro va dentro de powershell; traer todo y filtrar en python era lento y fragil.
     ps = ("Get-CimInstance Win32_Process -Filter \"Name='" + exe + "'\" | "
           "Where-Object { $_.CommandLine -like '*" + substr + "*' } | "
           "ForEach-Object { $_.ProcessId }")
@@ -91,8 +91,8 @@ def train_alive() -> bool:
 
 
 def wmi_launch(cmd: str, workdir: str) -> int | None:
-    """Lanza desacoplado via WMI (probado: sobrevive a la sesion). Devuelve PID o None."""
-    # ponytail: start /min fallaba en silencio; WMI Win32_Process.Create si funciona (PID 8784).
+    """Lanza desacoplado via WMI (sobrevive a la sesion). Devuelve PID o None."""
+    # start /min fallaba en silencio; WMI Win32_Process.Create si funciona.
     esc = cmd.replace('"', '""')
     ps = (f'$r = Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments '
           f'@{{CommandLine="{esc}"; CurrentDirectory="{workdir}"}}; $r.ProcessId')
@@ -148,8 +148,8 @@ def launch_train(ent: dict) -> None:
     py = train_python()
     device = "cuda" if Path(py) == VENV_PY else "cpu"
     batch = ent["batch_cuda"] if device == "cuda" else ent["batch_cpu"]
-    # ponytail: num-workers 0 porque el spawn de torch 2.9.1 en Windows revienta los workers
-    # (pickle truncado). Sin spawn no hay muerte; la GPU compensa la carga monohilo.
+    # num-workers 0: el spawn de torch 2.9.1 en Windows revienta los workers (pickle truncado).
+    # Sin spawn no hay muerte; la GPU compensa la carga monohilo.
     inner = (f'set PYTHONPATH=entrenador/core-pt && "{py}" -u -m lsm.training.train_classifier '
              f"--manifest {ent['manifest']} --cache-root dataset/processed "
              f"--task successor_positions126 --out {ent['out']} "
@@ -202,7 +202,7 @@ def main() -> None:
         elif procs_match("uv.exe", "cu126") or procs_match("uv.exe", "download.pytorch.org") or procs_match("aria2c.exe", "torch"):
             log("descarga CUDA en curso")
         else:
-            # ponytail: CUDA ya instalado; no auto-reinstalar por uv (se traba). Solo avisar.
+            # CUDA ya instalado; no auto-reinstalar por uv (se traba). Solo avisar.
             log("ALERTA sin torch CUDA y sin descarga: reinstalacion manual requerida")
     except Exception as exc:  # noqa: BLE001 - el watchdog nunca muere
         log(f"error interno: {exc}")
